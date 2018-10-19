@@ -1,0 +1,6 @@
+# Related to the weaviate image
+image:
+  # registry where weaviate image is stored
+  registry: docker.io
+  # tag of image to deploy
+  tag: latest

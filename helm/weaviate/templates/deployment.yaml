@@ -1,0 +1,17 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: weaviate
+  labels:
+    name: weaviate
+spec:
+  template:
+    metadata:
+      labels:
+        app: weaviate
+    spec:
+      containers:
+      - name: weaviate
+        image: {{ .Values.image.registry }}weaviate:{{ .Values.image.tag }}
+        ports:
+        - containerPort: 8080
