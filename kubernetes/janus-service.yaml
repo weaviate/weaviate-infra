@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: janus
+  name: janus
+spec:
+  ports:
+  - name: gremlin
+    port: 8182
+  - name: "8184"
+    port: 8184
+  selector:
+    app: janus

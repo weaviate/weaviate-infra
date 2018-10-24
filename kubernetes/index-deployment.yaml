@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: index
+  name: index
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: index
+    spec:
+      containers:
+      - image: elasticsearch:5
+        name: index
+        ports:
+        - containerPort: 9200
+        - containerPort: 9300
+        resources:
+          requests:
+            memory: "1536Mi"
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: index-claim
+      volumes:
+      - name: index-claim
+        persistentVolumeClaim:
+          claimName: index-claim

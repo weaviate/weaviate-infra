@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: weaviate
+  name: weaviate
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: weaviate
+    spec:
+      containers:
+      - image: creativesoftwarefdn/weaviate-dev-server:0.0.1
+        name: weaviate
+        ports:
+        - containerPort: 8080
