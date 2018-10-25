@@ -12,7 +12,7 @@ spec:
         app: weaviate
     spec:
       containers:
-      - image: creativesoftwarefdn/weaviate-dev-server:0.0.1
+      - image: creativesoftwarefdn/weaviate:unstable
         name: weaviate
         ports:
         - containerPort: 8080
