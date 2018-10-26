@@ -12,8 +12,11 @@ spec:
         app: db
     spec:
       containers:
-      - image: scylladb/scylla:2.0.1
+      - image: cassandra:3
         name: db
+        env:
+        - name: CASSANDRA_START_RPC
+          value: "true"
         ports:
         - containerPort: 10000
         - containerPort: 9042
@@ -24,7 +27,7 @@ spec:
         - containerPort: 9180
         - containerPort: 9100
         volumeMounts:
-        - mountPath: /var/lib/scylla
+        - mountPath: /var/lib/cassandra
           name: db-claim
       volumes:
       - name: db-claim
