@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: db
+  name: db
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - image: cassandra:3
+        name: db
+        env:
+        - name: CASSANDRA_START_RPC
+          value: "true"
+        ports:
+        - containerPort: 10000
+        - containerPort: 9042
+        - containerPort: 9160
+        - containerPort: 7000
+        - containerPort: 7001
+        - containerPort: 7199
+        - containerPort: 9180
+        - containerPort: 9100
+        volumeMounts:
+        - mountPath: /var/lib/cassandra
+          name: db-claim
+      volumes:
+      - name: db-claim
+        persistentVolumeClaim:
+          claimName: db-claim
