@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: janus
+  name: janus
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: janus
+    spec:
+      containers:
+      - image: creativesoftwarefdn/janusgraph:0.2.0-hadoop2
+        name: janus
+        ports:
+        - containerPort: 8182
+        - containerPort: 8184
+        resources:
+          requests:
+            memory: "2147Mi"
