@@ -12,6 +12,6 @@ spec:
     spec:
       containers:
       - name: weaviate
-        image: {{ .Values.image.registry }}weaviate:{{ .Values.image.tag }}
+        image: {{ .Values.image.registry }}creativesoftwarefdn/weaviate:{{ .Values.image.tag }}
         ports:
         - containerPort: 8080
