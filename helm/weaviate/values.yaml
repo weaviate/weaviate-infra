@@ -1,0 +1,43 @@
+# Related to the weaviate image
+image:
+  # registry where weaviate image is stored
+  registry: docker.io/
+  # tag of image to deploy
+  tag: k8s-test
+
+# Sub Chart Overrides
+
+#Cassandra
+cassandra:
+  image:
+    tag: 3
+  config:
+    cluster_size: 2
+    seed_size: 2
+    start_rpc: true
+  resources:
+    requests:
+      memory: 4Gi
+      cpu: 2
+    limits:
+      memory: 4Gi
+      cpu: 2
+
+#Elasticsearch
+elasticsearch:
+  master.replicas: 1
+  client.replicas: 1
+  cluster.env: 
+    MINIMUM_MASTER_NODES: "1"
+
+#Janus
+janusgraph:
+  properties:
+    storage.backend: cassandra
+    storage.hostname: weaviate-cassandra
+    gremlin.graph: org.janusgraph.core.JanusGraphFactory
+    index.search.elasticsearch.interface: REST_CLIENT
+    index.search.backend: elasticsearch
+    index.search.hostname: weaviate-elasticsearch-client
+    storage.index.search.local-mode: false
+    storage.index.search.client-only: false
