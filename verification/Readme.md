@@ -2,7 +2,7 @@
 
 ## Roadmap / Todos
 
-* [ ] get terms from contextionary (can be hardcoded at first)
+* [x] get terms from contextionary (can be hardcoded at first)
 * [ ] generate fixed number of actions in ontology
 * [ ] generate fixed number of things in ontology
 * [ ] generate fixed number of vertices with simple properties (string, bool, etc.)

@@ -1,0 +1,18 @@
+{
+  "name": "weaviate-deployment-verification",
+  "version": "0.1.0",
+  "description": "A simple script to dynamically create a specific number of actions and things (ontology) and verticies, as well as validate that everything went right. Can be used to automatically assure that a deployed instance of weaviate works as intended.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^5.8.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-react": "^7.11.1"
+  }
+}
