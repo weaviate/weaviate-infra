@@ -5,8 +5,8 @@
 * [x] get terms from contextionary (can be hardcoded at first)
 * [ ] generate fixed number of actions in ontology
 * [x] generate fixed number of things in ontology
-* [ ] add random property types to things and actions
-* [ ] generate fixed number of vertices with simple properties (string, bool, etc.)
+* [x] add random primitive property types to things ~~and actions~~ (no relations)
+* [ ] generate fixed number of vertices matching the previously created ontology (no relations) 
 * [ ] add reference properties to vertices
 * [ ] submit ontology to weaviate via REST API
 * [ ] submit verticies to weaviate via REST API

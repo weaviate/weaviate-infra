@@ -13,6 +13,8 @@ export type ThingClass = {
   properties: Array<Property>
 }
 
+const minimumNumberOfProperties = 1;
+const maximumNumberOfProperties = 8;
 const allowedPrimitiveDataTypes = ['number', 'string', 'boolean'];
 
 function randomSingleItemFromWords(words: Array<string>) {
@@ -29,16 +31,25 @@ function randomProperty(words: Array<string>): Property {
   return {
     name: randomSingleItemFromWords(words).toLowerCase(),
     '@datatype': [randomSingleItemFromWords(allowedPrimitiveDataTypes)],
-    description: '',
+    description: 'No property description, either ;-)',
 
   };
+}
+
+function randomProperties(min: number, max: number, words: Array<string>): Array<Property> {
+  const amount = Math.floor(Math.random() * (max - min) + min);
+  const properties: Array<Property> = [];
+  for (let i = 0; i < amount; i += 1) {
+    properties.push(randomProperty(words));
+  }
+  return properties;
 }
 
 function thingClassFromName(className: string, words: Array<string>): ThingClass {
   return {
     class: capitalizeWord(className),
     description: 'No description on this auto-generated thing',
-    properties: [randomProperty(words)],
+    properties: randomProperties(minimumNumberOfProperties, maximumNumberOfProperties, words),
   };
 }
 
