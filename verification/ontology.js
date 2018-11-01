@@ -2,7 +2,7 @@
 
 export type Property = {
   name: string,
-  '@datatype': Array<string>,
+  '@dataType': Array<string>,
   description: string,
 
 }
@@ -30,7 +30,7 @@ function capitalizeWord(word: string) {
 function randomProperty(words: Array<string>): Property {
   return {
     name: randomSingleItemFromWords(words).toLowerCase(),
-    '@datatype': [randomSingleItemFromWords(allowedPrimitiveDataTypes)],
+    '@dataType': [randomSingleItemFromWords(allowedPrimitiveDataTypes)],
     description: 'No property description, either ;-)',
 
   };
