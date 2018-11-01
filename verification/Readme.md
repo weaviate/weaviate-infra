@@ -4,7 +4,8 @@
 
 * [x] get terms from contextionary (can be hardcoded at first)
 * [ ] generate fixed number of actions in ontology
-* [ ] generate fixed number of things in ontology
+* [x] generate fixed number of things in ontology
+* [ ] add random property types to things and actions
 * [ ] generate fixed number of vertices with simple properties (string, bool, etc.)
 * [ ] add reference properties to vertices
 * [ ] submit ontology to weaviate via REST API
@@ -13,6 +14,7 @@
   we get the expected results back)
 * [ ] replace fixed numbers with dynamic values provided through CLI args
 * [ ] make weaviate discevery URL/origin configurable
+* [ ] dockerize script (so no one is annoyed by the babeling required for flowtypes)
 * [ ] run on travis
 
 ## FAQ
