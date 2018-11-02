@@ -57,4 +57,30 @@ describe('creating a random Thing based on a specific ontology', () => {
       expect(thing.awesome == true || thing.awesome == false).toBeTruthy();
     });
   });
+
+  describe('with multiple properties', () => {
+    const ThingClass = makeThingClass([{
+      name: 'awesome',
+      '@dataType': ['boolean'],
+      description: '',
+    }, {
+      name: 'amount',
+      '@dataType': ['number'],
+      description: '',
+    }, {
+      name: 'title',
+      '@dataType': ['string'],
+      description: '',
+    }]);
+
+    it('sets all the props correctly', () => {
+      const thing = thingFromClass(ThingClass);
+      expect(thing.awesome).not.toBeUndefined();
+      expect(thing.awesome == true || thing.awesome == false).toBeTruthy();
+      expect(thing.amount).not.toBeUndefined();
+      expect(thing.amount).toBeGreaterThanOrEqual(0);
+      expect(thing.title).not.toBeUndefined();
+      expect(thing.title).not.toBe('');
+    });
+  });
 });

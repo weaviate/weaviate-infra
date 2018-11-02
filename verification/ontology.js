@@ -1,5 +1,7 @@
 // @flow
 
+const { randomWord, randomBool, randomNumber } = require('./randomData');
+
 export type Property = {
   name: string,
   '@dataType': Array<string>,
@@ -55,9 +57,9 @@ function thingClassFromName(className: string, words: Array<string>): ThingClass
 
 function valueForType(type: string): string | number | boolean {
   switch (type) {
-    case 'number': { return 3; }
-    case 'string': { return 'something'; }
-    case 'boolean': { return true; }
+    case 'number': { return randomNumber(); }
+    case 'string': { return randomWord(); }
+    case 'boolean': { return randomBool(); }
     default: throw new Error(`unrecognized type: ${type}`);
   }
 }
