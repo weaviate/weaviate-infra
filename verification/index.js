@@ -2,24 +2,35 @@
 
 const fs = require('fs');
 
-const { uniqueNumbersBetween } = require('./random');
-const { thingClassFromName } = require('./ontology');
+const { uniqueNumbersBetween, randomNumbersBetween } = require('./random');
+const { thingClassFromName, thingFromClass } = require('./ontology');
 
 const contextionaryFileName = './contextionary.txt';
-const numberOfThings = 10;
+const numberOfThingClasses = 10;
+const numberOfThingVertices = 10;
 
 const readWordsFromFile = () => fs
   .readFileSync(contextionaryFileName, 'utf8')
   .split('\n')
   .map(line => line.split(' ')[0]);
 
-const createThings = (amount, words) => uniqueNumbersBetween(amount, words.length - 1)
-  .map(wordIndex => thingClassFromName(words[wordIndex], words));
+const createThingClasses = (amount, words) => (
+  uniqueNumbersBetween(amount, words.length - 1)
+    .map(wordIndex => thingClassFromName(words[wordIndex], words))
+);
+
+const createThingVerticies = (amount, thingClasses) => (
+  randomNumbersBetween(amount, thingClasses.length - 1)
+    .map(i => thingClasses[i])
+    .map(thingClass => thingFromClass(thingClass))
+);
 
 function main() {
   const words = readWordsFromFile();
-  const things = createThings(numberOfThings, words);
-  console.log(JSON.stringify(things, null, 2));
+  const thingClasses = createThingClasses(numberOfThingClasses, words);
+  const thingVertices = createThingVerticies(numberOfThingVertices,
+    thingClasses);
+  console.log(JSON.stringify(thingVertices, null, 2));
 }
 
 main();

@@ -10,7 +10,7 @@
   * [x] create a single thing with a single property
   * [x] create a single thing with many properties
   * [x] randomize property values
-  * [ ] create x amount of things
+  * [x] create x amount of things
   * [ ] include types other than number, string, boolean
 * [ ] add reference properties to vertices
 * [ ] submit ontology to weaviate via REST API

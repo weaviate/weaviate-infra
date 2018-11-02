@@ -76,5 +76,4 @@ function thingFromClass(thingClass: ThingClass) {
   };
 }
 
-
 module.exports = { thingClassFromName, thingFromClass };
