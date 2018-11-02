@@ -8,41 +8,13 @@ resource "google_container_cluster" "primary" {
   name               = "${var.cluster_name}"
   description        = "Kubernetes Cluster on GKE for Weaviate platform."
   zone               = "${var.gke_cluster_zone}"
-#  initial_node_count = "${var.node_count}"
   project			       = "${var.gke_project}"
 
-# To add later
-/*
-  additional_zones = [
-    "us-central1-b",
-    "us-central1-c",
-  ] 
-
-  master_auth {
-    username = "mr.yoda"
-    password = "adoy.rm"
-  }
-
-*/
 
   remove_default_node_pool = true
   node_pool {
     name = "default-pool"
   }
-
-/*
-  node_config {
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/compute",
-      "https://www.googleapis.com/auth/devstorage.read_only",
-      "https://www.googleapis.com/auth/logging.write",
-      "https://www.googleapis.com/auth/monitoring",
-    ]
-    machine_type = "${var.gke_machine_type}"
-    disk_size_gb = "${var.node_disk_size}"
-    tags = ["weaviate"]
-  }
-*/
 }
 
 
