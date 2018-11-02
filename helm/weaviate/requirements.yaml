@@ -8,8 +8,10 @@ dependencies:
     version: 1.11.1
     repository: "@stable"
     alias: elasticsearch
+    condition: elasticsearch.deploy
 
   - name: cassandra
     version: 0.9.0
     repository: "@incubator"
     alias: cassandra
+    condition: cassandra.deploy
