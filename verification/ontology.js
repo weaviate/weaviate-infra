@@ -53,5 +53,26 @@ function thingClassFromName(className: string, words: Array<string>): ThingClass
   };
 }
 
+function valueForType(type: string): string | number | boolean {
+  switch (type) {
+    case 'number': { return 3; }
+    case 'string': { return 'something'; }
+    case 'boolean': { return true; }
+    default: throw new Error(`unrecognized type: ${type}`);
+  }
+}
 
-module.exports = { thingClassFromName };
+function thingFromClass(thingClass: ThingClass) {
+  const props = thingClass.properties.reduce((acc, cur) => ({
+    ...acc,
+    [cur.name]: valueForType(cur['@dataType'][0]),
+  }), {});
+
+  return {
+    class: thingClass.class,
+    ...props,
+  };
+}
+
+
+module.exports = { thingClassFromName, thingFromClass };

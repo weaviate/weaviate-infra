@@ -7,6 +7,10 @@
 * [x] generate fixed number of things in ontology
 * [x] add random primitive property types to things ~~and actions~~ (no relations)
 * [ ] generate fixed number of vertices matching the previously created ontology (no relations) 
+  * [x] create a single thing with a single property
+  * [ ] create a single thing with many properties
+  * [ ] randomize property values
+  * [ ] create x amount of things
 * [ ] add reference properties to vertices
 * [ ] submit ontology to weaviate via REST API
 * [ ] submit verticies to weaviate via REST API
