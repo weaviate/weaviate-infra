@@ -1,3 +1,8 @@
+# Global values
+global:
+  db: cassandra
+  index: elasticsearch
+
 # Related to the weaviate image
 image:
   # registry where weaviate image is stored
@@ -9,6 +14,7 @@ image:
 
 #Cassandra
 cassandra:
+  deploy: true
   image:
     tag: 3
   config:
@@ -25,8 +31,9 @@ cassandra:
 
 #Elasticsearch
 elasticsearch:
+  deploy: true
   master.replicas: 1
-  client.replicas: 1
+  client.replicas: 2
   cluster.env: 
     MINIMUM_MASTER_NODES: "1"
 
