@@ -16,7 +16,7 @@
   * [x] make individual thing verticies referencable through uuids
   * [x] add 1 cross-reference to 1 other thing class 
   * [ ] add n cross-references (make sure we don't reference ourselves!)
-  * [ ] populate by randomly picking from thing that matches referenced class
+  * [x] populate by randomly picking from thing that matches referenced class
 * [ ] submit ontology to weaviate via REST API
 * [ ] submit verticies to weaviate via REST API
 * [ ] add validity checks (store created verticies in memory, query weaviate to see if
@@ -25,6 +25,17 @@
 * [ ] make weaviate discovery URL/origin configurable
 * [ ] dockerize script (so no one is annoyed by the babeling required for flowtypes)
 * [ ] run on travis
+
+## Known Limitations
+
+### Only one `@dataType` supported
+There are two cases for dataType:
+
+1. A primitive type. In this case `@dataType` is always an array of length 1
+2. A cross-references. In this case the length can be longer than 1
+
+However, the script currently only ever takes the first element of the array. 
+This was intentional to speed up development and should be reasonably easy to fix down the line.
 
 ## FAQ
 

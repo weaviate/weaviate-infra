@@ -18,7 +18,7 @@ export type ThingClass = {
 
 const minimumNumberOfProperties = 1;
 const maximumNumberOfProperties = 8;
-const allowedPrimitiveDataTypes = ['number', 'string', 'boolean', 'int', 'date'];
+const primitiveDataTypes = ['number', 'string', 'boolean', 'int', 'date'];
 
 function randomSingleItemFromWords(words: Array<string>) {
   return words[Math.floor(Math.random() * (words.length))];
@@ -33,7 +33,7 @@ function capitalizeWord(word: string) {
 function randomProperty(words: Array<string>): Property {
   return {
     name: randomSingleItemFromWords(words).toLowerCase(),
-    '@dataType': [randomSingleItemFromWords(allowedPrimitiveDataTypes)],
+    '@dataType': [randomSingleItemFromWords(primitiveDataTypes)],
     description: 'No property description, either ;-)',
   };
 }
@@ -97,5 +97,5 @@ module.exports = {
   thingClassFromName,
   thingFromClass,
   addReferenceToOtherThingClass,
-
+  primitiveDataTypes,
 };

@@ -6,9 +6,10 @@ const { uniqueNumbersBetween, randomNumbersBetween } = require('./random');
 const {
   thingClassFromName, thingFromClass, addReferenceToOtherThingClass,
 } = require('./ontology');
+const { randomlyFillCrossReferences } = require('./thingsCrossReferences');
 
 const contextionaryFileName = './contextionary.txt';
-const numberOfThingClasses = 2;
+const numberOfThingClasses = 5;
 const numberOfThingVertices = 20;
 
 const readWordsFromFile = () => fs
@@ -51,7 +52,8 @@ function main() {
   writeGreen(` created ${numberOfThingVertices} thing vertices without cross-references.`);
 
   thingClasses[0] = addReferenceToOtherThingClass(thingClasses[0], thingClasses[1]);
-  console.log('the thing class with reference', JSON.stringify(thingClasses[0], null, 2));
+  const thingVerticesWithRefs = randomlyFillCrossReferences(thingVertices, thingClasses[0]);
+  console.log('thing vertices', JSON.stringify(thingVerticesWithRefs, null, 2));
 }
 
 main();
