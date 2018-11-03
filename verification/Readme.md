@@ -23,7 +23,7 @@
   we get the expected results back)
 * [ ] replace fixed numbers with dynamic values provided through CLI args
 * [ ] make weaviate discovery URL/origin configurable
-* [ ] dockerize script (so no one is annoyed by the babeling required for flowtypes)
+* [x] dockerize script (so no one is annoyed by the babeling required for flowtypes)
 * [ ] run on travis
 
 ## Known Limitations
