@@ -1,13 +1,22 @@
 // data retrieved from here is not in the contextionary,
 // it should therefore not be used as Class names or
-// references. Instead it is meant as values for
-// primitve props
+// cross references. Instead it is meant as values for
+// primitve properties.
 
-function randomNumber() {
+function int() {
   return Math.floor(Math.random() * 10000);
 }
 
-function randomBool() {
+function number() {
+  return Math.random() * 10000;
+}
+
+function date() {
+  const unixTimeBetween1970and2020 = Math.floor(Math.random() * 1577836800);
+  return new Date(unixTimeBetween1970and2020).toISOString();
+}
+
+function bool() {
   return Math.random() >= 0.5;
 }
 
@@ -1012,8 +1021,10 @@ const words = ['captured',
   'death',
   'circling'];
 
-function randomWord() {
+function word() {
   return words[Math.floor(Math.random() * words.length)];
 }
 
-module.exports = { randomWord, randomNumber, randomBool };
+module.exports = {
+  word, number, bool, date, int,
+};

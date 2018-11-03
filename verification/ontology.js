@@ -1,6 +1,6 @@
 // @flow
 
-const { randomWord, randomBool, randomNumber } = require('./randomData');
+const random = require('./randomData');
 
 export type Property = {
   name: string,
@@ -17,10 +17,10 @@ export type ThingClass = {
 
 const minimumNumberOfProperties = 1;
 const maximumNumberOfProperties = 8;
-const allowedPrimitiveDataTypes = ['number', 'string', 'boolean'];
+const allowedPrimitiveDataTypes = ['number', 'string', 'boolean', 'int', 'date'];
 
 function randomSingleItemFromWords(words: Array<string>) {
-  return words[Math.floor(Math.random() * (words.length - 1))];
+  return words[Math.floor(Math.random() * (words.length))];
 }
 
 function capitalizeWord(word: string) {
@@ -57,9 +57,11 @@ function thingClassFromName(className: string, words: Array<string>): ThingClass
 
 function valueForType(type: string): string | number | boolean {
   switch (type) {
-    case 'number': { return randomNumber(); }
-    case 'string': { return randomWord(); }
-    case 'boolean': { return randomBool(); }
+    case 'int': { return random.int(); }
+    case 'number': { return random.number(); }
+    case 'string': { return random.word(); }
+    case 'boolean': { return random.bool(); }
+    case 'date': { return random.date(); }
     default: throw new Error(`unrecognized type: ${type}`);
   }
 }

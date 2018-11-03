@@ -6,19 +6,19 @@
 * [ ] generate fixed number of actions in ontology
 * [x] generate fixed number of things in ontology
 * [x] add random primitive property types to things ~~and actions~~ (no relations)
-* [ ] generate fixed number of vertices matching the previously created ontology (no relations) 
+* [x] generate fixed number of vertices matching the previously created ontology (no relations) 
   * [x] create a single thing with a single property
   * [x] create a single thing with many properties
   * [x] randomize property values
   * [x] create x amount of things
-  * [ ] include types other than number, string, boolean
+  * [x] include types other than number, string, boolean: int, date
 * [ ] add reference properties to vertices
 * [ ] submit ontology to weaviate via REST API
 * [ ] submit verticies to weaviate via REST API
 * [ ] add validity checks (store created verticies in memory, query weaviate to see if
   we get the expected results back)
 * [ ] replace fixed numbers with dynamic values provided through CLI args
-* [ ] make weaviate discevery URL/origin configurable
+* [ ] make weaviate discovery URL/origin configurable
 * [ ] dockerize script (so no one is annoyed by the babeling required for flowtypes)
 * [ ] run on travis
 

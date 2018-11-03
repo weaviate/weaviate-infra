@@ -30,7 +30,8 @@ function main() {
   const thingClasses = createThingClasses(numberOfThingClasses, words);
   const thingVertices = createThingVerticies(numberOfThingVertices,
     thingClasses);
-  console.log(JSON.stringify(thingVertices, null, 2));
+  console.log('thing classes', JSON.stringify(thingClasses, null, 2));
+  console.log('thing vertices', JSON.stringify(thingVertices, null, 2));
 }
 
 main();
