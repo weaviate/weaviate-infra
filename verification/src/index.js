@@ -3,11 +3,13 @@
 const fs = require('fs');
 
 const { uniqueNumbersBetween, randomNumbersBetween } = require('./random');
-const { thingClassFromName, thingFromClass } = require('./ontology');
+const {
+  thingClassFromName, thingFromClass, addReferenceToOtherThingClass,
+} = require('./ontology');
 
 const contextionaryFileName = './contextionary.txt';
-const numberOfThingClasses = 10;
-const numberOfThingVertices = 10;
+const numberOfThingClasses = 2;
+const numberOfThingVertices = 20;
 
 const readWordsFromFile = () => fs
   .readFileSync(contextionaryFileName, 'utf8')
@@ -25,13 +27,31 @@ const createThingVerticies = (amount, thingClasses) => (
     .map(thingClass => thingFromClass(thingClass))
 );
 
+
+function writeGreen(text) {
+  process.stdout.write(`\x1b[32m${text}\x1b[0m\n`);
+}
+
+function writeNoBreak(text) {
+  process.stdout.write(text);
+}
+
 function main() {
+  writeNoBreak('Reading contextionary...');
   const words = readWordsFromFile();
+  writeGreen(' succesfully parsed contextionary.');
+
+  writeNoBreak('Creating Thing Classes...');
   const thingClasses = createThingClasses(numberOfThingClasses, words);
+  writeGreen(` created ${numberOfThingClasses} thing classes without cross-references.`);
+
+  writeNoBreak('Creating Thing Vertices...');
   const thingVertices = createThingVerticies(numberOfThingVertices,
     thingClasses);
-  console.log('thing classes', JSON.stringify(thingClasses, null, 2));
-  console.log('thing vertices', JSON.stringify(thingVertices, null, 2));
+  writeGreen(` created ${numberOfThingVertices} thing vertices without cross-references.`);
+
+  thingClasses[0] = addReferenceToOtherThingClass(thingClasses[0], thingClasses[1]);
+  console.log('the thing class with reference', JSON.stringify(thingClasses[0], null, 2));
 }
 
 main();

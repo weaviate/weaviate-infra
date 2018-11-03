@@ -1,5 +1,6 @@
 // @flow
 
+const uuidv4 = require('uuid/v4');
 const random = require('./randomData');
 
 export type Property = {
@@ -34,7 +35,6 @@ function randomProperty(words: Array<string>): Property {
     name: randomSingleItemFromWords(words).toLowerCase(),
     '@dataType': [randomSingleItemFromWords(allowedPrimitiveDataTypes)],
     description: 'No property description, either ;-)',
-
   };
 }
 
@@ -70,6 +70,7 @@ function thingFromClass(thingClass: ThingClass) {
   const props = thingClass.properties.reduce((acc, cur) => ({
     ...acc,
     [cur.name]: valueForType(cur['@dataType'][0]),
+    uuid: uuidv4(),
   }), {});
 
   return {
@@ -78,4 +79,23 @@ function thingFromClass(thingClass: ThingClass) {
   };
 }
 
-module.exports = { thingClassFromName, thingFromClass };
+const crossReferenceProperty = (target: ThingClass): Property => ({
+  name: `in${target.class}`,
+  '@dataType': [target.class],
+  description: `A reference to the thing class '${target.class}'.`,
+});
+
+const addReferenceToOtherThingClass = (source: ThingClass, target: ThingClass): ThingClass => ({
+  ...source,
+  properties: [
+    ...source.properties,
+    crossReferenceProperty(target),
+  ],
+});
+
+module.exports = {
+  thingClassFromName,
+  thingFromClass,
+  addReferenceToOtherThingClass,
+
+};
