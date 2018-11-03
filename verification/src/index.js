@@ -3,14 +3,14 @@
 const fs = require('fs');
 
 const { uniqueNumbersBetween, randomNumbersBetween } = require('./random');
-const {
-  thingClassFromName, thingFromClass, addReferenceToOtherThingClass,
-} = require('./ontology');
-const { randomlyFillCrossReferences } = require('./thingsCrossReferences');
+const { thingClassFromName, thingFromClass } = require('./ontology');
+const { randomlyFillCrossReferences } = require('./thingsVerticesCrossReferences');
+const thingClassReferences = require('./thingsClassesCrossReferences');
 
 const contextionaryFileName = './contextionary.txt';
 const numberOfThingClasses = 5;
 const numberOfThingVertices = 20;
+const numberOfThingCrossRefs = 5;
 
 const readWordsFromFile = () => fs
   .readFileSync(contextionaryFileName, 'utf8')
@@ -23,7 +23,7 @@ const createThingClasses = (amount, words) => (
 );
 
 const createThingVerticies = (amount, thingClasses) => (
-  randomNumbersBetween(amount, thingClasses.length - 1)
+  randomNumbersBetween(amount, thingClasses.length)
     .map(i => thingClasses[i])
     .map(thingClass => thingFromClass(thingClass))
 );
@@ -51,9 +51,25 @@ function main() {
     thingClasses);
   writeGreen(` created ${numberOfThingVertices} thing vertices without cross-references.`);
 
-  thingClasses[0] = addReferenceToOtherThingClass(thingClasses[0], thingClasses[1]);
-  const thingVerticesWithRefs = randomlyFillCrossReferences(thingVertices, thingClasses[0]);
-  console.log('thing vertices', JSON.stringify(thingVerticesWithRefs, null, 2));
+  writeNoBreak('Creating Cross-References in ontology...');
+  const thingClassesWithRefs = thingClassReferences.randomCrossReferences(
+    numberOfThingCrossRefs, thingClasses,
+  );
+  writeGreen(` created ${numberOfThingCrossRefs} cross-references.`);
+
+  let thingVerticesWithRefs = thingVertices;
+  thingClassesWithRefs.forEach((thingClass) => {
+    writeNoBreak(`Populating all cross-refs on vertices of class ${thingClass.class}...`);
+    thingVerticesWithRefs = randomlyFillCrossReferences(thingVerticesWithRefs, thingClass);
+    writeGreen(' done');
+  });
+
+  writeGreen('\nDone. Here are 20 random thing vertices:');
+  console.log(JSON.stringify(
+    uniqueNumbersBetween(10, thingVerticesWithRefs.length).map(i => thingVerticesWithRefs[i]),
+    null,
+    2,
+  ));
 }
 
 main();

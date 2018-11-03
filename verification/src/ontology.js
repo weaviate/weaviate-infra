@@ -79,23 +79,8 @@ function thingFromClass(thingClass: ThingClass) {
   };
 }
 
-const crossReferenceProperty = (target: ThingClass): Property => ({
-  name: `in${target.class}`,
-  '@dataType': [target.class],
-  description: `A reference to the thing class '${target.class}'.`,
-});
-
-const addReferenceToOtherThingClass = (source: ThingClass, target: ThingClass): ThingClass => ({
-  ...source,
-  properties: [
-    ...source.properties,
-    crossReferenceProperty(target),
-  ],
-});
-
 module.exports = {
   thingClassFromName,
   thingFromClass,
-  addReferenceToOtherThingClass,
   primitiveDataTypes,
 };

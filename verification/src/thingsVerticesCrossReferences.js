@@ -24,7 +24,7 @@ const populateCrossReferencesOnVertices = (vertices, classToPopulate) => (vertex
 
     return {
       ...acc,
-      [cur.name]: getRandomThingOfClass(cur['@dataType'][0], vertices),
+      [cur.name]: { uuid: (getRandomThingOfClass(cur['@dataType'][0], vertices) || {}).uuid },
     };
   }, {});
 

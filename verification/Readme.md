@@ -12,10 +12,10 @@
   * [x] randomize property values
   * [x] create x amount of things
   * [x] include types other than number, string, boolean: int, date
-* [ ] add reference properties to vertices
+* [x] add reference properties to vertices
   * [x] make individual thing verticies referencable through uuids
   * [x] add 1 cross-reference to 1 other thing class 
-  * [ ] add n cross-references (make sure we don't reference ourselves!)
+  * [x] add n cross-references (make sure we don't reference ourselves!)
   * [x] populate by randomly picking from thing that matches referenced class
 * [ ] submit ontology to weaviate via REST API
 * [ ] submit verticies to weaviate via REST API
