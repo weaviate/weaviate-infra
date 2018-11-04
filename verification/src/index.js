@@ -6,11 +6,9 @@ const { uniqueNumbersBetween, randomNumbersBetween } = require('./random');
 const { thingClassFromName, thingFromClass } = require('./ontology');
 const { randomlyFillCrossReferences } = require('./thingsVerticesCrossReferences');
 const thingClassReferences = require('./thingsClassesCrossReferences');
+const parseOptions = require('./options');
 
 const contextionaryFileName = './contextionary.txt';
-const numberOfThingClasses = 5;
-const numberOfThingVertices = 20;
-const numberOfThingCrossRefs = 5;
 
 const readWordsFromFile = () => fs
   .readFileSync(contextionaryFileName, 'utf8')
@@ -38,24 +36,25 @@ function writeNoBreak(text) {
 }
 
 function main() {
+  const options = parseOptions();
+
   writeNoBreak('Reading contextionary...');
   const words = readWordsFromFile();
   writeGreen(' succesfully parsed contextionary.');
 
   writeNoBreak('Creating Thing Classes...');
-  const thingClasses = createThingClasses(numberOfThingClasses, words);
-  writeGreen(` created ${numberOfThingClasses} thing classes without cross-references.`);
+  const thingClasses = createThingClasses(options.amounts.thingClasses, words);
+  writeGreen(` created ${options.amounts.thingClasses} thing classes without cross-references.`);
 
   writeNoBreak('Creating Thing Vertices...');
-  const thingVertices = createThingVerticies(numberOfThingVertices,
-    thingClasses);
-  writeGreen(` created ${numberOfThingVertices} thing vertices without cross-references.`);
+  const thingVertices = createThingVerticies(options.amounts.vertices, thingClasses);
+  writeGreen(` created ${options.amounts.vertices} thing vertices without cross-references.`);
 
   writeNoBreak('Creating Cross-References in ontology...');
   const thingClassesWithRefs = thingClassReferences.randomCrossReferences(
-    numberOfThingCrossRefs, thingClasses,
+    options.amounts.crossReferences, thingClasses,
   );
-  writeGreen(` created ${numberOfThingCrossRefs} cross-references.`);
+  writeGreen(` created ${options.amounts.crossReferences} cross-references.`);
 
   let thingVerticesWithRefs = thingVertices;
   thingClassesWithRefs.forEach((thingClass) => {
@@ -64,12 +63,12 @@ function main() {
     writeGreen(' done');
   });
 
-  writeGreen('\nDone. Here are 20 random thing vertices:');
-  console.log(JSON.stringify(
-    uniqueNumbersBetween(10, thingVerticesWithRefs.length).map(i => thingVerticesWithRefs[i]),
-    null,
-    2,
-  ));
+  // writeGreen('\nDone. Here are 20 random thing vertices:');
+  // console.log(JSON.stringify(
+  //   uniqueNumbersBetween(10, thingVerticesWithRefs.length).map(i => thingVerticesWithRefs[i]),
+  //   null,
+  //   2,
+  // ));
 }
 
 main();
