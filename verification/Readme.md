@@ -21,7 +21,7 @@
 * [ ] submit verticies to weaviate via REST API
 * [ ] add validity checks (store created verticies in memory, query weaviate to see if
   we get the expected results back)
-* [ ] replace fixed numbers with dynamic values provided through CLI args
+* [x] replace fixed numbers with dynamic values provided through CLI args
 * [ ] make weaviate discovery URL/origin configurable
 * [x] dockerize script (so no one is annoyed by the babeling required for flowtypes)
 * [ ] run on travis
