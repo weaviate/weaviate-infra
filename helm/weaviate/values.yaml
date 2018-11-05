@@ -10,6 +10,8 @@ image:
   # tag of image to deploy
   tag: k8s-test
 
+importer: true
+
 # Sub Chart Overrides
 
 #Cassandra
@@ -32,13 +34,21 @@ cassandra:
 #Elasticsearch
 elasticsearch:
   deploy: true
-  master.replicas: 1
+  master.replicas: 2
   client.replicas: 2
   cluster.env: 
-    MINIMUM_MASTER_NODES: "1"
+    MINIMUM_MASTER_NODES: "2"
 
 #Janus
 janusgraph:
+  replicaCount: 1
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 1
+    limits:
+      memory: 2Gi
+      cpu: 1
   properties:
     storage.backend: cassandra
     storage.hostname: weaviate-cassandra
