@@ -41,6 +41,7 @@ elasticsearch:
 
 #Janus
 janusgraph:
+  configMapOverrideName: janusgraph-config
   replicaCount: 1
   resources:
     requests:
@@ -51,6 +52,7 @@ janusgraph:
       cpu: 1
   properties:
     storage.backend: cassandra
+    storage.directory: /db/cassandra
     storage.hostname: weaviate-cassandra
     gremlin.graph: org.janusgraph.core.JanusGraphFactory
     index.search.elasticsearch.interface: REST_CLIENT
