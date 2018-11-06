@@ -8,7 +8,7 @@ dependencies:
     version: 1.11.1
     repository: "@stable"
     alias: elasticsearch
-    condition: elasticsearch.deploy
+    condition: elasticsearch.deploy-so
 
   - name: cassandra
     version: 0.9.0

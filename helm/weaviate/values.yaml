@@ -33,7 +33,7 @@ cassandra:
 
 #Elasticsearch
 elasticsearch:
-  deploy: true
+  deploy-so: true
   master.replicas: 2
   client.replicas: 2
   cluster.env: 
@@ -41,6 +41,8 @@ elasticsearch:
 
 #Janus
 janusgraph:
+  elasticsearch.deploy:
+    deploy: false
   configMapOverrideName: janusgraph-config
   replicaCount: 1
   resources:

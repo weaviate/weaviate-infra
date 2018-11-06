@@ -1,20 +1,20 @@
-{{- if ( .Values.configMapOverrideName) -}}
+{{- if ( .Values.janusgraph.configMapOverrideName) -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: janusgraph-config
+  name: janusgraph-local-config
 data:
   janusgraph.properties: |-
     gremlin.graph=org.janusgraph.core.JanusGraphFactory
 
-    {{- $eshostname := (index .Values.properties "index.search.hostname") | default (printf "%s-elasticsearch-client" .Release.Name | trunc 63 | trimSuffix "-")}}
-    {{- range $key, $val := .Values.properties }}
+    {{- $eshostname := (index .Values.janusgraph.properties "index.search.hostname") | default (printf "%s-elasticsearch-client" .Release.Name | trunc 63 | trimSuffix "-")}}
+    {{- range $key, $val := .Values.janusgraph.properties }}
     {{- if ne $key "index.search.hostname" }}
     {{ $key }}={{ $val }}
     {{- end -}}
     {{ end }}
 
-    {{- if eq (index .Values.properties "index.search.backend") "elasticsearch" "es"}}
+    {{- if eq (index .Values.janusgraph.properties "index.search.backend") "elasticsearch" "es"}}
     index.search.hostname={{ $eshostname }}
     {{- end }}
   gremlin-server.yaml: |-
