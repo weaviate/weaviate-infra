@@ -41,6 +41,9 @@ elasticsearch:
 
 #Janus
 janusgraph:
+  image:
+    repository: creativesoftwarefdn/janusgraph-docker
+    tag: latest
   elasticsearch.deploy:
     deploy: false
   configMapOverrideName: janusgraph-config
