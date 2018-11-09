@@ -5,6 +5,12 @@ image:
   # tag of image to deploy
   tag: k8s-test
 
+autoscaling:
+  enabled: true
+cpuTargetPercentage: 70
+replicas: 1
+replicasMax: 5 
+
 # Sub Chart Overrides
 
 #Cassandra
