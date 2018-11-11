@@ -1,3 +1,8 @@
+# Global values
+global:
+  db: cassandra
+  index: elasticsearch
+
 # Related to the weaviate image
 image:
   # registry where weaviate image is stored
@@ -5,10 +10,13 @@ image:
   # tag of image to deploy
   tag: k8s-test
 
+importer: true
+
 # Sub Chart Overrides
 
 #Cassandra
 cassandra:
+  deploy: true
   image:
     tag: 3
   config:
@@ -25,15 +33,31 @@ cassandra:
 
 #Elasticsearch
 elasticsearch:
-  master.replicas: 1
-  client.replicas: 1
+  deploy-so: true
+  master.replicas: 2
+  client.replicas: 2
   cluster.env: 
-    MINIMUM_MASTER_NODES: "1"
+    MINIMUM_MASTER_NODES: "2"
 
 #Janus
 janusgraph:
+  image:
+    repository: creativesoftwarefdn/janusgraph-docker
+    tag: latest
+  elasticsearch.deploy:
+    deploy: false
+  configMapOverrideName: janusgraph-config
+  replicaCount: 1
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 1
+    limits:
+      memory: 2Gi
+      cpu: 1
   properties:
     storage.backend: cassandra
+    storage.directory: /db/cassandra
     storage.hostname: weaviate-cassandra
     gremlin.graph: org.janusgraph.core.JanusGraphFactory
     index.search.elasticsearch.interface: REST_CLIENT
