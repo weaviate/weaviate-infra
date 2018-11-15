@@ -8,9 +8,19 @@ type Amounts = {
   crossReferences: number,
 }
 
+type Authorization = {
+  apiKey: string,
+  apiToken: string,
+}
+
 type GlobalOptions = {
   amounts: Amounts,
+  authorization: Authorization,
 }
+
+// non-configurable options
+const apiKey = '657a48b9-e000-4d9a-b51d-69a0b621c1b9';
+const apiToken = '57ac8392-1ecc-4e17-9350-c9c866ac832b';
 
 module.exports = function parse(): GlobalOptions {
   const { argv } = yargs
@@ -35,6 +45,10 @@ module.exports = function parse(): GlobalOptions {
       thingClasses: argv.t,
       vertices: argv.v,
       crossReferences: argv.r,
+    },
+    authorization: {
+      apiKey,
+      apiToken,
     },
   };
 };

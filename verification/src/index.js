@@ -7,6 +7,7 @@ const { thingClassFromName, thingFromClass } = require('./ontology');
 const { randomlyFillCrossReferences } = require('./thingsVerticesCrossReferences');
 const thingClassReferences = require('./thingsClassesCrossReferences');
 const parseOptions = require('./options');
+const createSwaggerClient = require('./swagger');
 
 const contextionaryFileName = './contextionary.txt';
 
@@ -35,7 +36,7 @@ function writeNoBreak(text) {
   process.stdout.write(text);
 }
 
-function main() {
+async function main() {
   const options = parseOptions();
 
   writeNoBreak('Reading contextionary...');
@@ -69,6 +70,24 @@ function main() {
   //   null,
   //   2,
   // ));
+  //
+
+  // const client = await createSwaggerClient(options);
+
+  // client
+  //   .apis
+  //   .schema
+  //   .weaviate_schema_things_create({
+  //     thingClass: {
+  //       class: 'Car',
+  //       description: 'Foo',
+  //       properties: [],
+  //       keywords: [],
+  //     },
+  //   })
+  //   .then(res => console.log(res))
+  //   .catch(err => console.error(err));
 }
+
 
 main();
