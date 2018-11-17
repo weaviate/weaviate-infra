@@ -27,10 +27,21 @@ const populateCrossReferencesOnVertices = (vertices, classToPopulate) => (vertex
       return acc;
     }
 
+    const target = getRandomThingOfClass(cur['@dataType'][0], vertices);
+    if (!target) {
+      // there is no guarantuee that a vertex exists for every
+      // thingClass since we randomly chose the classes. If we have a
+      // relatively small amount of desired vertices but a relatively
+      // large number of desired thingClasses, this becomes increasingly
+      // likely
+
+      return acc;
+    }
+
     return {
       ...acc,
       [cur.name]: {
-        $cref: (getRandomThingOfClass(cur['@dataType'][0], vertices) || {}).uuid,
+        $cref: target.uuid,
         type: 'Thing',
         locationUrl: 'http://localhost:8080',
       },

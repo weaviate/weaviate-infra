@@ -160,12 +160,14 @@ class Submitter {
     let failed = 0;
 
     const handleSuccess = reference => (res) => {
-      log.green(`Successfully added cross-ref from ${reference.thingId} to ${reference.body.$cref} (Status ${res.status})`);
+      log.green(`Successfully added cross-ref from ${reference.thingId} to `
+        + `${reference.body.$cref} (Status ${res.status})`);
       succeeded += 1;
     };
 
     const handleError = reference => (err) => {
-      log.red(`Could not create cross-ref on ${reference.className} (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+      log.red(`Could not create cross-ref on ${reference.className} `
+        + `(Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
       failed += 1;
     };
 
