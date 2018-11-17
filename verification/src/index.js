@@ -99,6 +99,8 @@ async function main() {
   const thingVertices = await createThingVertices(options, thingClasses, submitter);
   const thingClassesWithRefs = await addCrossRefsToThingClasses(options, thingClasses, submitter);
   await populateCrossReferencesForThingVertices(thingClassesWithRefs, thingVertices, submitter);
+
+  submitter.printStatus();
 }
 
 

@@ -36,16 +36,31 @@ class Submitter {
   }
 
   printStatus() {
-    console.log(JSON.stringify(this.status));
+    log.bold('------------------------------------');
+    log.bold('Stats (Summary)');
+    log.bold('------------------------------------');
+
+    this.status.forEach((task) => {
+      log.normal('');
+      log.boldNoBreak('Task: ');
+      log.normal(task.description);
+      log.bold('------------');
+      log.boldNoBreak('Success: ');
+      log.green(task.succeeded);
+      log.boldNoBreak('Failed: ');
+      log.red(task.failed);
+      log.boldNoBreak('Success Rate: ');
+      log.normal(`${Math.floor(task.succeeded / (task.failed + task.succeeded) * 100)} %`);
+    });
   }
 
   async thingClasses(classes: Array<any>) {
-    let success = 0;
+    let succeeded = 0;
     let failed = 0;
 
     const handleSuccess = thingClass => (res) => {
       log.green(`Successfully submitted thingClass ${thingClass.class} to weaviate (Status ${res.status})`);
-      success += 1;
+      succeeded += 1;
     };
 
     const handleError = thingClass => (err) => {
@@ -64,17 +79,20 @@ class Submitter {
         .catch(handleError(thingClass));
     }
 
-    // eslint-disable-next-line no-console
-    console.log('Ontology Creation: %d successful creations, %d failed creations', success, failed);
+    this.addStatus({
+      description: 'Ontology Creation (creating Things without cross-references)',
+      succeeded,
+      failed,
+    });
   }
 
   async thingClassReferences(references: Array<any>) {
-    let success = 0;
+    let succeeded = 0;
     let failed = 0;
 
     const handleSuccess = reference => (res) => {
       log.green(`Successfully added cross-ref on ${reference.className} to ${reference.body['@dataType'][0]} (Status ${res.status})`);
-      success += 1;
+      succeeded += 1;
     };
 
     const handleError = reference => (err) => {
@@ -93,19 +111,22 @@ class Submitter {
         .catch(handleError(reference));
     }
 
-    // eslint-disable-next-line no-console
-    console.log('Cross-Reference creation: %d successful creations, %d failed creations', success, failed);
+    this.addStatus({
+      description: 'Ontology Updates (create cross-references between existing Thing Classes)',
+      succeeded,
+      failed,
+    });
   }
 
   async thingVertices(vertices: Array<any>) {
-    let success = 0;
+    let succeeded = 0;
     let failed = 0;
 
     const handleSuccess = thingVertex => (res) => {
       log.green(`Successfully submitted thingVertex of type ${thingVertex.class} to weaviate (Status ${res.status})`);
       // eslint-disable-next-line no-param-reassign
       thingVertex.uuid = res.body.thingId;
-      success += 1;
+      succeeded += 1;
     };
 
     const handleError = thingVertex => (err) => {
@@ -125,19 +146,22 @@ class Submitter {
         .catch(handleError(thingVertex));
     }
 
-    // eslint-disable-next-line no-console
-    console.log('Ontology Creation: %d successful creations, %d failed creations', success, failed);
+    this.addStatus({
+      description: 'Create Thing Vertices (vertices of various thingClasses with only primitive properties)',
+      succeeded,
+      failed,
+    });
     return vertices;
   }
 
 
   async thingVerticesReferences(references: Array<any>) {
-    let success = 0;
+    let succeeded = 0;
     let failed = 0;
 
     const handleSuccess = reference => (res) => {
       log.green(`Successfully added cross-ref from ${reference.thingId} to ${reference.body.$cref} (Status ${res.status})`);
-      success += 1;
+      succeeded += 1;
     };
 
     const handleError = reference => (err) => {
@@ -156,8 +180,11 @@ class Submitter {
         .catch(handleError(reference));
     }
 
-    // eslint-disable-next-line no-console
-    console.log('Cross-Reference population: %d successful populations, %d failed populations', success, failed);
+    this.addStatus({
+      description: 'Update Thing Vertices (fill cross-references to other Things)',
+      succeeded,
+      failed,
+    });
   }
 }
 
