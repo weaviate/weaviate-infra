@@ -13,17 +13,26 @@ type Authorization = {
   apiToken: string,
 }
 
-type GlobalOptions = {
-  amounts: Amounts,
-  authorization: Authorization,
+type ServiceDiscovery = {
+  weaviateOrigin: string,
 }
 
-// non-configurable options
+export type GlobalOptions = {
+  amounts: Amounts,
+  authorization: Authorization,
+  serviceDiscovery: ServiceDiscovery,
+}
+
+// non-configurable options & defaults
 const apiKey = '657a48b9-e000-4d9a-b51d-69a0b621c1b9';
 const apiToken = '57ac8392-1ecc-4e17-9350-c9c866ac832b';
+const defaults = {
+  weaviateOrigin: 'http://localhost:8080',
+};
 
 module.exports = function parse(): GlobalOptions {
   const { argv } = yargs
+    .default({ w: defaults.weaviateOrigin })
     .usage('Usage: $0 <command> [options]')
     .command('generate', 'Generate dummy data based on options')
     .demandCommand(1)
@@ -36,6 +45,8 @@ module.exports = function parse(): GlobalOptions {
     .describe('t', 'Number of Thing Classes in the ontology')
     .alias('r', 'cross-references')
     .describe('r', 'Number of Classes that cross-references other classes')
+    .alias('w', 'weaviate-origin')
+    .describe('w', 'Origin of weaviate (e.g. http://weaviate:8080)')
     .demandOption(['v', 't', 'r'])
     .help('h')
     .alias('h', 'help');
@@ -49,6 +60,9 @@ module.exports = function parse(): GlobalOptions {
     authorization: {
       apiKey,
       apiToken,
+    },
+    serviceDiscovery: {
+      weaviateOrigin: argv.w,
     },
   };
 };

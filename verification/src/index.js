@@ -74,20 +74,20 @@ async function addCrossRefsToThingClasses(options, thingClasses, submitter) {
   return result.thingClasses;
 }
 
-async function populateCrossReferencesForThingVertices(thingClasses, thingVertices, submitter) {
+async function populateCrossReferencesForThingVertices(
+  thingClasses, thingVertices, submitter, options,
+) {
   const withThingId = thing => (!!thing.uuid);
   let thingVerticesWithRefs = thingVertices.filter(withThingId);
-  let newThingReferences = [];
+  let newReferences = [];
   thingClasses.forEach((thingClass) => {
     log.noBreak(`Populating all cross-refs on vertices of class ${thingClass.class}...`);
-    const {
-      vertices: updatedThingVertices, newReferences: newThingReferencesThisIteration,
-    } = randomlyFillCrossReferences(thingVerticesWithRefs, thingClass);
-    thingVerticesWithRefs = updatedThingVertices;
-    newThingReferences = [...newThingReferences, ...newThingReferencesThisIteration];
+    const result = randomlyFillCrossReferences(thingVerticesWithRefs, thingClass, options);
+    thingVerticesWithRefs = result.vertices;
+    newReferences = [...newReferences, ...result.newReferences];
     log.green(' done');
   });
-  await submitter.thingVerticesReferences(newThingReferences);
+  await submitter.thingVerticesReferences(newReferences);
   return thingVerticesWithRefs;
 }
 
@@ -98,7 +98,9 @@ async function main() {
   const thingClasses = await createThingClasses(options, words, submitter);
   const thingVertices = await createThingVertices(options, thingClasses, submitter);
   const thingClassesWithRefs = await addCrossRefsToThingClasses(options, thingClasses, submitter);
-  await populateCrossReferencesForThingVertices(thingClassesWithRefs, thingVertices, submitter);
+  await populateCrossReferencesForThingVertices(
+    thingClassesWithRefs, thingVertices, submitter, options,
+  );
 
   submitter.printStatus();
 }
