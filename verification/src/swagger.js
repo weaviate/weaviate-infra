@@ -3,6 +3,7 @@
 import type { GlobalOptions } from './options';
 
 const Swagger = require('swagger-client');
+const log = require('./log');
 
 module.exports = (options: GlobalOptions) => {
   const insertTokenRequestInterceptor = (req) => {
@@ -16,5 +17,10 @@ module.exports = (options: GlobalOptions) => {
   return Swagger({
     url: `${options.serviceDiscovery.weaviateOrigin}/swagger.json`,
     requestInterceptor: insertTokenRequestInterceptor,
+  }).catch((e) => {
+    log.bold('\n\nError!');
+    log.normal('\nCould not retrieve swagger JSON from weaviate:');
+    log.red(`\t${e.message}\n\n`);
+    process.exit(1);
   });
 };
