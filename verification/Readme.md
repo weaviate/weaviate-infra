@@ -17,10 +17,12 @@
   * [x] add 1 cross-reference to 1 other thing class 
   * [x] add n cross-references (make sure we don't reference ourselves!)
   * [x] populate by randomly picking from thing that matches referenced class
-* [ ] submit ontology to weaviate via REST API
+* [x] submit ontology to weaviate via REST API
   * [x] submit things without cross-references
-  * [ ] submit cross-references
+  * [x] submit cross-references
 * [ ] submit verticies to weaviate via REST API
+  * [ ] without cross-refs
+  * [ ] populate cross-refs
 * [ ] add validity checks (store created verticies in memory, query weaviate to see if
   we get the expected results back)
 * [x] replace fixed numbers with dynamic values provided through CLI args

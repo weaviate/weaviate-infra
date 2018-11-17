@@ -62,10 +62,13 @@ async function main() {
   writeGreen(` created ${options.amounts.vertices} thing vertices without cross-references.`);
 
   writeNoBreak('Creating Cross-References in ontology...');
-  const thingClassesWithRefs = thingClassReferences.randomCrossReferences(
+  const {
+    thingClasses: thingClassesWithRefs, newReferences,
+  } = thingClassReferences.randomCrossReferences(
     options.amounts.crossReferences, thingClasses,
   );
   writeGreen(` created ${options.amounts.crossReferences} cross-references.`);
+  await submit.thingClassReferences(client, newReferences, writeGreen, writeRed);
 
   let thingVerticesWithRefs = thingVertices;
   thingClassesWithRefs.forEach((thingClass) => {
