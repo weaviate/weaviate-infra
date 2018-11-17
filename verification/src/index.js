@@ -9,81 +9,94 @@ const thingClassReferences = require('./thingsClassesCrossReferences');
 const parseOptions = require('./options');
 const createSwaggerClient = require('./swagger');
 const submit = require('./submitters');
+const log = require('./log');
 
 const contextionaryFileName = './contextionary.txt';
 
-const removeWordsWithSpecialChars = w => (w.match(/^[A-Za-z]+$/));
-
-const readWordsFromFile = () => fs
-  .readFileSync(contextionaryFileName, 'utf8')
-  .split('\n')
-  .map(line => line.split(' ')[0])
-  .filter(removeWordsWithSpecialChars);
-
-const createThingClasses = (amount, words) => (
-  uniqueNumbersBetween(amount, words.length - 1)
-    .map(wordIndex => thingClassFromName(words[wordIndex], words))
-);
-
-const createThingVerticies = (amount, thingClasses) => (
-  randomNumbersBetween(amount, thingClasses.length)
-    .map(i => thingClasses[i])
-    .map(thingClass => thingFromClass(thingClass))
-);
-
-
-function writeGreen(text) {
-  process.stdout.write(`\x1b[32m${text}\x1b[0m\n`);
-}
-
-function writeRed(text) {
-  process.stdout.write(`\x1b[31m${text}\x1b[0m\n`);
-}
-
-function writeNoBreak(text) {
-  process.stdout.write(text);
-}
-
-async function main() {
+async function init() {
   const options = parseOptions();
   const client = await createSwaggerClient(options);
 
-  writeNoBreak('Reading contextionary...');
+  return { options, client };
+}
+
+function parseContextionary() {
+  const removeWordsWithSpecialChars = w => (w.match(/^[A-Za-z]+$/));
+  const readWordsFromFile = () => fs
+    .readFileSync(contextionaryFileName, 'utf8')
+    .split('\n')
+    .map(line => line.split(' ')[0])
+    .filter(removeWordsWithSpecialChars);
+
+  log.noBreak('Reading contextionary...');
   const words = readWordsFromFile();
-  writeGreen(' succesfully parsed contextionary.');
+  log.green(' succesfully parsed contextionary.');
 
-  writeNoBreak('Creating Thing Classes...');
-  const thingClasses = createThingClasses(options.amounts.thingClasses, words);
-  writeGreen(` created ${options.amounts.thingClasses} thing classes without cross-references.`);
-  await submit.thingClasses(client, thingClasses, writeGreen, writeRed);
+  return words;
+}
 
-  writeNoBreak('Creating Thing Vertices...');
-  let thingVertices = createThingVerticies(options.amounts.vertices, thingClasses);
-  writeGreen(` created ${options.amounts.vertices} thing vertices without cross-references.`);
-  thingVertices = await submit.thingVertices(client, thingVertices, writeGreen, writeRed);
+async function createThingClasses(options, words, client) {
+  log.noBreak('Creating Thing Classes...');
 
-  writeNoBreak('Creating Cross-References in ontology...');
-  const {
-    thingClasses: thingClassesWithRefs, newReferences,
-  } = thingClassReferences.randomCrossReferences(
-    options.amounts.crossReferences, thingClasses,
+  const amount = options.amounts.thingClasses;
+  const thingClasses = uniqueNumbersBetween(amount, words.length - 1)
+    .map(wordIndex => thingClassFromName(words[wordIndex], words));
+
+  await submit.thingClasses(client, thingClasses);
+  log.green(` created ${options.amounts.thingClasses} thing classes without cross-references.`);
+  return thingClasses;
+}
+
+async function createThingVertices(options, thingClasses, client) {
+  const create = amount => (
+    randomNumbersBetween(amount, thingClasses.length)
+      .map(i => thingClasses[i])
+      .map(thingClass => thingFromClass(thingClass))
   );
-  writeGreen(` created ${options.amounts.crossReferences} cross-references.`);
-  await submit.thingClassReferences(client, newReferences, writeGreen, writeRed);
 
+  log.noBreak('Creating Thing Vertices...');
+  const thingVertices = create(options.amounts.vertices);
+  log.green(` created ${options.amounts.vertices} thing vertices without cross-references.`);
+
+  // submit will return thingVertices enriched with uuids assigned by weaviate
+  return submit.thingVertices(client, thingVertices);
+}
+
+async function addCrossRefsToThingClasses(options, thingClasses, client) {
+  log.noBreak('Creating Cross-References in ontology...');
+  const amount = options.amounts.crossReferences;
+  const result = thingClassReferences.randomCrossReferences(amount, thingClasses);
+  log.green(` created ${amount} cross-references.`);
+
+  await submit.thingClassReferences(client, result.newReferences);
+  return result.thingClasses;
+}
+
+async function populateCrossReferencesForThingVertices(thingClasses, thingVertices, client) {
   const withThingId = thing => (!!thing.uuid);
   let thingVerticesWithRefs = thingVertices.filter(withThingId);
   let newThingReferences = [];
-  thingClassesWithRefs.forEach((thingClass) => {
-    writeNoBreak(`Populating all cross-refs on vertices of class ${thingClass.class}...`);
+  thingClasses.forEach((thingClass) => {
+    log.noBreak(`Populating all cross-refs on vertices of class ${thingClass.class}...`);
     const {
       vertices: updatedThingVertices, newReferences: newThingReferencesThisIteration,
     } = randomlyFillCrossReferences(thingVerticesWithRefs, thingClass);
     thingVerticesWithRefs = updatedThingVertices;
     newThingReferences = [...newThingReferences, ...newThingReferencesThisIteration];
-    writeGreen(' done');
+    log.green(' done');
   });
-  await submit.thingVerticesReferences(client, newThingReferences, writeGreen, writeRed);
+  await submit.thingVerticesReferences(client, newThingReferences);
+  return thingVerticesWithRefs;
+}
+
+async function main() {
+  const { options, client } = await init();
+  const words = parseContextionary();
+
+  const thingClasses = await createThingClasses(options, words, client);
+  const thingVertices = await createThingVertices(options, thingClasses, client);
+  const thingClassesWithRefs = await addCrossRefsToThingClasses(options, thingClasses, client);
+  await populateCrossReferencesForThingVertices(thingClassesWithRefs, thingVertices, client);
 }
 
 

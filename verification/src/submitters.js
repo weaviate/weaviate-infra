@@ -1,14 +1,16 @@
-async function thingClasses(client, classes, writeGreen, writeRed) {
+const log = require('./log');
+
+async function thingClasses(client, classes) {
   let success = 0;
   let failed = 0;
 
   const handleSuccess = thingClass => (res) => {
-    writeGreen(`Successfully submitted thingClass ${thingClass.class} to weaviate (Status ${res.status})`);
+    log.green(`Successfully submitted thingClass ${thingClass.class} to weaviate (Status ${res.status})`);
     success += 1;
   };
 
   const handleError = thingClass => (err) => {
-    writeRed(`Could not submit thingClass ${thingClass.class} to weaviate (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+    log.red(`Could not submit thingClass ${thingClass.class} to weaviate (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
     failed += 1;
   };
 
@@ -27,17 +29,17 @@ async function thingClasses(client, classes, writeGreen, writeRed) {
   console.log('Ontology Creation: %d successful creations, %d failed creations', success, failed);
 }
 
-async function thingClassReferences(client, references, writeGreen, writeRed) {
+async function thingClassReferences(client, references) {
   let success = 0;
   let failed = 0;
 
   const handleSuccess = reference => (res) => {
-    writeGreen(`Successfully added cross-ref on ${reference.className} to ${reference.body['@dataType'][0]} (Status ${res.status})`);
+    log.green(`Successfully added cross-ref on ${reference.className} to ${reference.body['@dataType'][0]} (Status ${res.status})`);
     success += 1;
   };
 
   const handleError = reference => (err) => {
-    writeRed(`Could not create cross-ref on ${reference.className} to ${reference.body['@dataType'][0]} (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+    log.red(`Could not create cross-ref on ${reference.className} to ${reference.body['@dataType'][0]} (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
     failed += 1;
   };
 
@@ -56,19 +58,19 @@ async function thingClassReferences(client, references, writeGreen, writeRed) {
   console.log('Cross-Reference creation: %d successful creations, %d failed creations', success, failed);
 }
 
-async function thingVertices(client, vertices, writeGreen, writeRed) {
+async function thingVertices(client, vertices) {
   let success = 0;
   let failed = 0;
 
   const handleSuccess = thingVertex => (res) => {
-    writeGreen(`Successfully submitted thingVertex of type ${thingVertex.class} to weaviate (Status ${res.status})`);
+    log.green(`Successfully submitted thingVertex of type ${thingVertex.class} to weaviate (Status ${res.status})`);
     // eslint-disable-next-line no-param-reassign
     thingVertex.uuid = res.body.thingId;
     success += 1;
   };
 
   const handleError = thingVertex => (err) => {
-    writeRed(`Could not submit thingVertex of type ${thingVertex.class} to weaviate (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+    log.red(`Could not submit thingVertex of type ${thingVertex.class} to weaviate (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
     failed += 1;
   };
 
@@ -102,17 +104,17 @@ function referenceToPatchDoc(reference) {
   };
 }
 
-async function thingVerticesReferences(client, references, writeGreen, writeRed) {
+async function thingVerticesReferences(client, references) {
   let success = 0;
   let failed = 0;
 
   const handleSuccess = reference => (res) => {
-    writeGreen(`Successfully added cross-ref from ${reference.thingId} to ${reference.body.$cref} (Status ${res.status})`);
+    log.green(`Successfully added cross-ref from ${reference.thingId} to ${reference.body.$cref} (Status ${res.status})`);
     success += 1;
   };
 
   const handleError = reference => (err) => {
-    writeRed(`Could not create cross-ref on ${reference.className} (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+    log.red(`Could not create cross-ref on ${reference.className} (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
     failed += 1;
   };
 
