@@ -8,16 +8,18 @@ const { randomlyFillCrossReferences } = require('./thingsVerticesCrossReferences
 const thingClassReferences = require('./thingsClassesCrossReferences');
 const parseOptions = require('./options');
 const createSwaggerClient = require('./swagger');
-const submit = require('./submitters');
+const Submitter = require('./submitters');
 const log = require('./log');
 
 const contextionaryFileName = './contextionary.txt';
 
+
 async function init() {
   const options = parseOptions();
   const client = await createSwaggerClient(options);
+  const submitter = new Submitter(client);
 
-  return { options, client };
+  return { options, submitter };
 }
 
 function parseContextionary() {
@@ -35,19 +37,19 @@ function parseContextionary() {
   return words;
 }
 
-async function createThingClasses(options, words, client) {
+async function createThingClasses(options, words, submitter) {
   log.noBreak('Creating Thing Classes...');
 
   const amount = options.amounts.thingClasses;
   const thingClasses = uniqueNumbersBetween(amount, words.length - 1)
     .map(wordIndex => thingClassFromName(words[wordIndex], words));
 
-  await submit.thingClasses(client, thingClasses);
+  await submitter.thingClasses(thingClasses);
   log.green(` created ${options.amounts.thingClasses} thing classes without cross-references.`);
   return thingClasses;
 }
 
-async function createThingVertices(options, thingClasses, client) {
+async function createThingVertices(options, thingClasses, submitter) {
   const create = amount => (
     randomNumbersBetween(amount, thingClasses.length)
       .map(i => thingClasses[i])
@@ -59,20 +61,20 @@ async function createThingVertices(options, thingClasses, client) {
   log.green(` created ${options.amounts.vertices} thing vertices without cross-references.`);
 
   // submit will return thingVertices enriched with uuids assigned by weaviate
-  return submit.thingVertices(client, thingVertices);
+  return submitter.thingVertices(thingVertices);
 }
 
-async function addCrossRefsToThingClasses(options, thingClasses, client) {
+async function addCrossRefsToThingClasses(options, thingClasses, submitter) {
   log.noBreak('Creating Cross-References in ontology...');
   const amount = options.amounts.crossReferences;
   const result = thingClassReferences.randomCrossReferences(amount, thingClasses);
   log.green(` created ${amount} cross-references.`);
 
-  await submit.thingClassReferences(client, result.newReferences);
+  await submitter.thingClassReferences(result.newReferences);
   return result.thingClasses;
 }
 
-async function populateCrossReferencesForThingVertices(thingClasses, thingVertices, client) {
+async function populateCrossReferencesForThingVertices(thingClasses, thingVertices, submitter) {
   const withThingId = thing => (!!thing.uuid);
   let thingVerticesWithRefs = thingVertices.filter(withThingId);
   let newThingReferences = [];
@@ -85,18 +87,18 @@ async function populateCrossReferencesForThingVertices(thingClasses, thingVertic
     newThingReferences = [...newThingReferences, ...newThingReferencesThisIteration];
     log.green(' done');
   });
-  await submit.thingVerticesReferences(client, newThingReferences);
+  await submitter.thingVerticesReferences(newThingReferences);
   return thingVerticesWithRefs;
 }
 
 async function main() {
-  const { options, client } = await init();
+  const { options, submitter } = await init();
   const words = parseContextionary();
 
-  const thingClasses = await createThingClasses(options, words, client);
-  const thingVertices = await createThingVertices(options, thingClasses, client);
-  const thingClassesWithRefs = await addCrossRefsToThingClasses(options, thingClasses, client);
-  await populateCrossReferencesForThingVertices(thingClassesWithRefs, thingVertices, client);
+  const thingClasses = await createThingClasses(options, words, submitter);
+  const thingVertices = await createThingVertices(options, thingClasses, submitter);
+  const thingClassesWithRefs = await addCrossRefsToThingClasses(options, thingClasses, submitter);
+  await populateCrossReferencesForThingVertices(thingClassesWithRefs, thingVertices, submitter);
 }
 
 
