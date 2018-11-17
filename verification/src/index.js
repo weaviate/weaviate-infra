@@ -58,8 +58,9 @@ async function main() {
   await submit.thingClasses(client, thingClasses, writeGreen, writeRed);
 
   writeNoBreak('Creating Thing Vertices...');
-  const thingVertices = createThingVerticies(options.amounts.vertices, thingClasses);
+  let thingVertices = createThingVerticies(options.amounts.vertices, thingClasses);
   writeGreen(` created ${options.amounts.vertices} thing vertices without cross-references.`);
+  thingVertices = await submit.thingVertices(client, thingVertices, writeGreen, writeRed);
 
   writeNoBreak('Creating Cross-References in ontology...');
   const {

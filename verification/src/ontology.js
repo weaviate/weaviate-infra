@@ -1,6 +1,5 @@
 // @flow
 
-const uuidv4 = require('uuid/v4');
 const random = require('./randomData');
 
 export type Property = {
@@ -73,7 +72,6 @@ function thingFromClass(thingClass: ThingClass) {
   const props = thingClass.properties.reduce((acc, cur) => ({
     ...acc,
     [cur.name]: valueForType(cur['@dataType'][0]),
-    uuid: uuidv4(),
   }), {});
 
   return {

@@ -56,7 +56,41 @@ async function thingClassReferences(client, references, writeGreen, writeRed) {
   console.log('Cross-Reference creation: %d successful creations, %d failed creations', success, failed);
 }
 
+async function thingVertices(client, vertices, writeGreen, writeRed) {
+  let success = 0;
+  let failed = 0;
+
+  const handleSuccess = thingVertex => (res) => {
+    writeGreen(`Successfully submitted thingVertex of type ${thingVertex.class} to weaviate (Status ${res.status})`);
+    // eslint-disable-next-line no-param-reassign
+    thingVertex.uuid = res.body.thingId;
+    success += 1;
+  };
+
+  const handleError = thingVertex => (err) => {
+    writeRed(`Could not submit thingVertex of type ${thingVertex.class} to weaviate (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+    failed += 1;
+  };
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const thingVertex of vertices) {
+    const { class: className, ...schema } = thingVertex;
+    // eslint-disable-next-line no-await-in-loop
+    await client
+      .apis
+      .things
+      .weaviate_things_create({ body: { asnyc: false, thing: { '@class': className, '@context': 'some-context', schema } } })
+      .then(handleSuccess(thingVertex))
+      .catch(handleError(thingVertex));
+  }
+
+  // eslint-disable-next-line no-console
+  console.log('Ontology Creation: %d successful creations, %d failed creations', success, failed);
+  return vertices;
+}
+
 module.exports = {
   thingClasses,
   thingClassReferences,
+  thingVertices,
 };
