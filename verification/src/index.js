@@ -71,12 +71,19 @@ async function main() {
   writeGreen(` created ${options.amounts.crossReferences} cross-references.`);
   await submit.thingClassReferences(client, newReferences, writeGreen, writeRed);
 
-  let thingVerticesWithRefs = thingVertices;
+  const withThingId = thing => (!!thing.uuid);
+  let thingVerticesWithRefs = thingVertices.filter(withThingId);
+  let newThingReferences = [];
   thingClassesWithRefs.forEach((thingClass) => {
     writeNoBreak(`Populating all cross-refs on vertices of class ${thingClass.class}...`);
-    thingVerticesWithRefs = randomlyFillCrossReferences(thingVerticesWithRefs, thingClass);
+    const {
+      vertices: updatedThingVertices, newReferences: newThingReferencesThisIteration,
+    } = randomlyFillCrossReferences(thingVerticesWithRefs, thingClass);
+    thingVerticesWithRefs = updatedThingVertices;
+    newThingReferences = [...newThingReferences, ...newThingReferencesThisIteration];
     writeGreen(' done');
   });
+  await submit.thingVerticesReferences(client, newThingReferences, writeGreen, writeRed);
 }
 
 

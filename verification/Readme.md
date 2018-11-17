@@ -3,7 +3,7 @@
 ## Roadmap / Todos
 
 * [x] get terms from contextionary (can be hardcoded at first)
-* [ ] generate fixed number of actions in ontology
+* [ ] add support for actions (should be identical to things)
 * [x] generate fixed number of things in ontology
 * [x] add random primitive property types to things ~~and actions~~ (no relations)
 * [x] generate fixed number of vertices matching the previously created ontology (no relations) 
@@ -20,9 +20,9 @@
 * [x] submit ontology to weaviate via REST API
   * [x] submit things without cross-references
   * [x] submit cross-references
-* [ ] submit verticies to weaviate via REST API
-  * [ ] without cross-refs
-  * [ ] populate cross-refs
+* [x] submit verticies to weaviate via REST API
+  * [x] without cross-refs
+  * [x] populate cross-refs
 * [ ] add validity checks (store created verticies in memory, query weaviate to see if
   we get the expected results back)
 * [x] replace fixed numbers with dynamic values provided through CLI args

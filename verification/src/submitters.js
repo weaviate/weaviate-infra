@@ -89,8 +89,51 @@ async function thingVertices(client, vertices, writeGreen, writeRed) {
   return vertices;
 }
 
+function referenceToPatchDoc(reference) {
+  return {
+    thingId: reference.thingId,
+    body: [
+      {
+        op: 'add',
+        path: `/schema/${reference.propertyName}`,
+        value: reference.body,
+      },
+    ],
+  };
+}
+
+async function thingVerticesReferences(client, references, writeGreen, writeRed) {
+  let success = 0;
+  let failed = 0;
+
+  const handleSuccess = reference => (res) => {
+    writeGreen(`Successfully added cross-ref from ${reference.thingId} to ${reference.body.$cref} (Status ${res.status})`);
+    success += 1;
+  };
+
+  const handleError = reference => (err) => {
+    writeRed(`Could not create cross-ref on ${reference.className} (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+    failed += 1;
+  };
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const reference of references) {
+    // eslint-disable-next-line no-await-in-loop
+    await client
+      .apis
+      .things
+      .weaviate_things_patch(referenceToPatchDoc(reference))
+      .then(handleSuccess(reference))
+      .catch(handleError(reference));
+  }
+
+  // eslint-disable-next-line no-console
+  console.log('Cross-Reference population: %d successful populations, %d failed populations', success, failed);
+}
+
 module.exports = {
   thingClasses,
   thingClassReferences,
   thingVertices,
+  thingVerticesReferences,
 };
