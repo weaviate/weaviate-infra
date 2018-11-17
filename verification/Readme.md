@@ -18,6 +18,8 @@
   * [x] add n cross-references (make sure we don't reference ourselves!)
   * [x] populate by randomly picking from thing that matches referenced class
 * [ ] submit ontology to weaviate via REST API
+  * [x] submit things without cross-references
+  * [ ] submit cross-references
 * [ ] submit verticies to weaviate via REST API
 * [ ] add validity checks (store created verticies in memory, query weaviate to see if
   we get the expected results back)
