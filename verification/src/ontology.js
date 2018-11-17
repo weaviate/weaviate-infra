@@ -41,8 +41,11 @@ function randomProperty(words: Array<string>): Property {
 function randomProperties(min: number, max: number, words: Array<string>): Array<Property> {
   const amount = Math.floor(Math.random() * (max - min) + min);
   const properties: Array<Property> = [];
+
+  // filter words for lowercase words only
+  const lowerCaseWords = words.filter(word => word.charAt(0).match(/[a-z]/));
   for (let i = 0; i < amount; i += 1) {
-    properties.push(randomProperty(words));
+    properties.push(randomProperty(lowerCaseWords));
   }
   return properties;
 }

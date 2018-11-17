@@ -8,13 +8,17 @@ const { randomlyFillCrossReferences } = require('./thingsVerticesCrossReferences
 const thingClassReferences = require('./thingsClassesCrossReferences');
 const parseOptions = require('./options');
 const createSwaggerClient = require('./swagger');
+const submit = require('./submitters');
 
 const contextionaryFileName = './contextionary.txt';
+
+const removeWordsWithSpecialChars = w => (w.match(/^[A-Za-z]+$/));
 
 const readWordsFromFile = () => fs
   .readFileSync(contextionaryFileName, 'utf8')
   .split('\n')
-  .map(line => line.split(' ')[0]);
+  .map(line => line.split(' ')[0])
+  .filter(removeWordsWithSpecialChars);
 
 const createThingClasses = (amount, words) => (
   uniqueNumbersBetween(amount, words.length - 1)
@@ -32,12 +36,17 @@ function writeGreen(text) {
   process.stdout.write(`\x1b[32m${text}\x1b[0m\n`);
 }
 
+function writeRed(text) {
+  process.stdout.write(`\x1b[31m${text}\x1b[0m\n`);
+}
+
 function writeNoBreak(text) {
   process.stdout.write(text);
 }
 
 async function main() {
   const options = parseOptions();
+  const client = await createSwaggerClient(options);
 
   writeNoBreak('Reading contextionary...');
   const words = readWordsFromFile();
@@ -46,6 +55,7 @@ async function main() {
   writeNoBreak('Creating Thing Classes...');
   const thingClasses = createThingClasses(options.amounts.thingClasses, words);
   writeGreen(` created ${options.amounts.thingClasses} thing classes without cross-references.`);
+  await submit.thingClasses(client, thingClasses, writeGreen, writeRed);
 
   writeNoBreak('Creating Thing Vertices...');
   const thingVertices = createThingVerticies(options.amounts.vertices, thingClasses);
@@ -63,30 +73,6 @@ async function main() {
     thingVerticesWithRefs = randomlyFillCrossReferences(thingVerticesWithRefs, thingClass);
     writeGreen(' done');
   });
-
-  // writeGreen('\nDone. Here are 20 random thing vertices:');
-  // console.log(JSON.stringify(
-  //   uniqueNumbersBetween(10, thingVerticesWithRefs.length).map(i => thingVerticesWithRefs[i]),
-  //   null,
-  //   2,
-  // ));
-  //
-
-  // const client = await createSwaggerClient(options);
-
-  // client
-  //   .apis
-  //   .schema
-  //   .weaviate_schema_things_create({
-  //     thingClass: {
-  //       class: 'Car',
-  //       description: 'Foo',
-  //       properties: [],
-  //       keywords: [],
-  //     },
-  //   })
-  //   .then(res => console.log(res))
-  //   .catch(err => console.error(err));
 }
 
 
