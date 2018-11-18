@@ -8,6 +8,8 @@ type Status = {
   failed: number,
 }
 
+type Hrtime = [number, number]
+
 function referenceToPatchDoc(reference) {
   return {
     thingId: reference.thingId,
@@ -19,6 +21,10 @@ function referenceToPatchDoc(reference) {
       },
     ],
   };
+}
+
+function formatElapsed(elapsed: Hrtime): string {
+  return `${Math.floor(elapsed[0] * 1000 + elapsed[1] / 1000000)}ms`;
 }
 
 class Submitter {
@@ -53,6 +59,7 @@ class Submitter {
       log.normal(`${Math.floor(task.succeeded / (task.failed + task.succeeded) * 100)} %`);
     });
   }
+
 
   async thingClasses(classes: Array<any>) {
     let succeeded = 0;
@@ -159,9 +166,10 @@ class Submitter {
     let succeeded = 0;
     let failed = 0;
 
-    const handleSuccess = reference => (res) => {
+    const handleSuccess = (reference, start) => (res) => {
+      const elapsed = process.hrtime(start);
       log.green(`Successfully added cross-ref from ${reference.thingId} to `
-        + `${reference.body.$cref} (Status ${res.status})`);
+        + `${reference.body.$cref} (Status ${res.status}), took ${formatElapsed(elapsed)}`);
       succeeded += 1;
     };
 
@@ -173,12 +181,13 @@ class Submitter {
 
     // eslint-disable-next-line no-restricted-syntax
     for (const reference of references) {
-    // eslint-disable-next-line no-await-in-loop
+      const start = process.hrtime();
+      // eslint-disable-next-line no-await-in-loop
       await this.client
         .apis
         .things
         .weaviate_things_patch(referenceToPatchDoc(reference))
-        .then(handleSuccess(reference))
+        .then(handleSuccess(reference, start))
         .catch(handleError(reference));
     }
 
