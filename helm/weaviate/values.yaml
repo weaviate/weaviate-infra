@@ -6,7 +6,7 @@ image:
   tag: k8s-test
 
 autoscaling:
-  enabled: true
+  enabled: false
 cpuTargetPercentage: 70
 replicas: 1
 replicasMax: 5 
