@@ -8,7 +8,7 @@ image:
   # registry where weaviate image is stored
   registry: docker.io/
   # tag of image to deploy
-  tag: k8s-test
+  tag: unstable
 
 importer: true
 
