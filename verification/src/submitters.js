@@ -1,5 +1,8 @@
 // @flow
 
+import type { Monitoring, Hrtime } from './benchmark';
+
+const BenchmarkReporter = require('./benchmark');
 const log = require('./log');
 
 type Status = {
@@ -7,8 +10,6 @@ type Status = {
   succeeded: number,
   failed: number,
 }
-
-type Hrtime = [number, number]
 
 function referenceToPatchDoc(reference) {
   return {
@@ -32,13 +33,20 @@ class Submitter {
 
   status: Array<Status>;
 
+  monitoring: Array<Monitoring>;
+
   constructor(client: any) {
     this.client = client;
     this.status = [];
+    this.monitoring = [];
   }
 
   addStatus(status: Status) {
     this.status.push(status);
+  }
+
+  addMonitoring(entry: Monitoring) {
+    this.monitoring.push(entry);
   }
 
   printStatus() {
@@ -60,30 +68,47 @@ class Submitter {
     });
   }
 
+  printBenchmark() {
+    new BenchmarkReporter(this.monitoring).print();
+  }
+
 
   async thingClasses(classes: Array<any>) {
     let succeeded = 0;
     let failed = 0;
 
-    const handleSuccess = thingClass => (res) => {
+    const handleSuccess = (thingClass, start) => (res) => {
       log.green(`Successfully submitted thingClass ${thingClass.class} to weaviate (Status ${res.status})`);
       succeeded += 1;
+      this.addMonitoring({
+        verb: 'create',
+        resource: 'schema/thing',
+        success: true,
+        hrtime: process.hrtime(start),
+      });
     };
 
-    const handleError = thingClass => (err) => {
+    const handleError = (thingClass, start) => (err) => {
       log.red(`Could not submit thingClass ${thingClass.class} to weaviate (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+      this.addMonitoring({
+        verb: 'create',
+        resource: 'schema/thing',
+        success: false,
+        hrtime: process.hrtime(start),
+      });
       failed += 1;
     };
 
     // eslint-disable-next-line no-restricted-syntax
     for (const thingClass of classes) {
-    // eslint-disable-next-line no-await-in-loop
+      const start = process.hrtime();
+      // eslint-disable-next-line no-await-in-loop
       await this.client
         .apis
         .schema
         .weaviate_schema_things_create({ thingClass })
-        .then(handleSuccess(thingClass))
-        .catch(handleError(thingClass));
+        .then(handleSuccess(thingClass, start))
+        .catch(handleError(thingClass, start));
     }
 
     this.addStatus({
@@ -97,25 +122,38 @@ class Submitter {
     let succeeded = 0;
     let failed = 0;
 
-    const handleSuccess = reference => (res) => {
+    const handleSuccess = (reference, start) => (res) => {
       log.green(`Successfully added cross-ref on ${reference.className} to ${reference.body['@dataType'][0]} (Status ${res.status})`);
+      this.addMonitoring({
+        verb: 'create',
+        resource: 'schema/thing/property',
+        success: true,
+        hrtime: process.hrtime(start),
+      });
       succeeded += 1;
     };
 
-    const handleError = reference => (err) => {
+    const handleError = (reference, start) => (err) => {
       log.red(`Could not create cross-ref on ${reference.className} to ${reference.body['@dataType'][0]} (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+      this.addMonitoring({
+        verb: 'create',
+        resource: 'schema/thing/property',
+        success: false,
+        hrtime: process.hrtime(start),
+      });
       failed += 1;
     };
 
     // eslint-disable-next-line no-restricted-syntax
     for (const reference of references) {
-    // eslint-disable-next-line no-await-in-loop
+      const start = process.hrtime();
+      // eslint-disable-next-line no-await-in-loop
       await this.client
         .apis
         .schema
         .weaviate_schema_things_properties_add(reference)
-        .then(handleSuccess(reference))
-        .catch(handleError(reference));
+        .then(handleSuccess(reference, start))
+        .catch(handleError(reference, start));
     }
 
     this.addStatus({
@@ -129,28 +167,41 @@ class Submitter {
     let succeeded = 0;
     let failed = 0;
 
-    const handleSuccess = thingVertex => (res) => {
+    const handleSuccess = (thingVertex, start) => (res) => {
       log.green(`Successfully submitted thingVertex of type ${thingVertex.class} to weaviate (Status ${res.status})`);
       // eslint-disable-next-line no-param-reassign
       thingVertex.uuid = res.body.thingId;
+      this.addMonitoring({
+        verb: 'create',
+        resource: 'thing',
+        success: true,
+        hrtime: process.hrtime(start),
+      });
       succeeded += 1;
     };
 
-    const handleError = thingVertex => (err) => {
+    const handleError = (thingVertex, start) => (err) => {
       log.red(`Could not submit thingVertex of type ${thingVertex.class} to weaviate (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+      this.addMonitoring({
+        verb: 'create',
+        resource: 'thing',
+        success: false,
+        hrtime: process.hrtime(start),
+      });
       failed += 1;
     };
 
     // eslint-disable-next-line no-restricted-syntax
     for (const thingVertex of vertices) {
       const { class: className, ...schema } = thingVertex;
+      const start = process.hrtime();
       // eslint-disable-next-line no-await-in-loop
       await this.client
         .apis
         .things
         .weaviate_things_create({ body: { asnyc: false, thing: { '@class': className, '@context': 'some-context', schema } } })
-        .then(handleSuccess(thingVertex))
-        .catch(handleError(thingVertex));
+        .then(handleSuccess(thingVertex, start))
+        .catch(handleError(thingVertex, start));
     }
 
     this.addStatus({
@@ -168,12 +219,24 @@ class Submitter {
 
     const handleSuccess = (reference, start) => (res) => {
       const elapsed = process.hrtime(start);
+      this.addMonitoring({
+        verb: 'patch (add cross-ref)',
+        resource: 'thing',
+        success: true,
+        hrtime: process.hrtime(start),
+      });
       log.green(`Successfully added cross-ref from ${reference.thingId} to `
         + `${reference.body.$cref} (Status ${res.status}), took ${formatElapsed(elapsed)}`);
       succeeded += 1;
     };
 
-    const handleError = reference => (err) => {
+    const handleError = (reference, start) => (err) => {
+      this.addMonitoring({
+        verb: 'patch (add cross-ref)',
+        resource: 'thing',
+        success: false,
+        hrtime: process.hrtime(start),
+      });
       log.red(`Could not create cross-ref on ${reference.className} `
         + `(Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
       failed += 1;

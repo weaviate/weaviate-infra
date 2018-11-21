@@ -102,7 +102,7 @@ async function main() {
     thingClassesWithRefs, thingVertices, submitter, options,
   );
 
-  submitter.printStatus();
+  submitter.printBenchmark();
 }
 
 
