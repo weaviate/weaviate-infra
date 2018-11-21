@@ -53,8 +53,12 @@ After a few minutes run
 kops validate cluster
 ```
 
-If everything is up, verify you can connect to the cluster:
+## Check cluster
+
+Once everything is up and running, verify you can connect to the cluster:
 
 ```
 kubectl get nodes
 ```
+
+Now you're ready to [deploy weaviate](./README.md)
