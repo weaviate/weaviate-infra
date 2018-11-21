@@ -62,3 +62,10 @@ kubectl get nodes
 ```
 
 Now you're ready to [deploy weaviate](./README.md)
+
+
+## Tear down your cluster
+
+```
+kops delete cluster --name=weaviate.k8s.local --state=gs://weaviate-kubernetes-clusters/ --yes
+```
