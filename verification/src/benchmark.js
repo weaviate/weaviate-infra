@@ -24,16 +24,14 @@ function headerRow(): Array<string> {
   return ['verb', 'resource', 'benchmark', 'result'];
 }
 
-function tableRow(
+const tableRow = (
   verb: string, resource: string, benchmark: string, calculate: Function,
-): Array<string> {
-  return [
-    verb,
-    resource,
-    benchmark,
-    calculate(verb, resource),
-  ];
-}
+): Array<string> => [
+  verb,
+  resource,
+  benchmark,
+  calculate(verb, resource),
+];
 
 const averageTime = items => items.reduce((acc, curr) => (
   acc + toMs(curr.hrtime)), 0) / items.length;
@@ -48,7 +46,7 @@ class BenchmarkReporter {
 
   constructor(monitoring: Array<Monitoring>) {
     this.monitoring = monitoring;
-    this.successRate = this.successRate.bind(this);
+    // this.successRate = this.successRate.bind(this);
     this.averageAll = this.averageAll.bind(this);
     this.averageSuccessful = this.averageSuccessful.bind(this);
     this.averageFailed = this.averageFailed.bind(this);
@@ -141,7 +139,7 @@ class BenchmarkReporter {
     }
   }
 
-  successRate(verb: string, resource: string): string {
+  successRate = (verb: string, resource: string): string => {
     const all = this.filter(verb, resource);
     const success = all.filter(i => !!i.success);
 
