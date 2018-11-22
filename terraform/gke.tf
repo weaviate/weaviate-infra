@@ -10,7 +10,6 @@ resource "google_container_cluster" "primary" {
   zone               = "${var.gke_cluster_zone}"
   project			       = "${var.gke_project}"
 
-
   remove_default_node_pool = true
   node_pool {
     name = "default-pool"
@@ -22,7 +21,7 @@ resource "google_container_node_pool" "primary_pool" {
   name       = "primary-pool"
   cluster    = "${google_container_cluster.primary.name}"
   zone       = "${var.gke_cluster_zone}"
-  node_count = "${var.node_count}"
+  initial_node_count = "${var.initial_node_count}"
 
   node_config {
     oauth_scopes = [
@@ -37,8 +36,8 @@ resource "google_container_node_pool" "primary_pool" {
   }
 
   autoscaling {
-    min_node_count = 2
-    max_node_count = 10
+    min_node_count = "${var.min_nodes}"
+    max_node_count = "${var.max_nodes}"
   }
 
   management {

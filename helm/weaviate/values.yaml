@@ -12,6 +12,12 @@ image:
 
 importer: true
 
+autoscaling:
+  enabled: false
+cpuTargetPercentage: 70
+replicas: 1
+replicasMax: 5 
+
 # Sub Chart Overrides
 
 #Cassandra

@@ -53,5 +53,3 @@ Install Helm Chart
 ```
 helm install --name weaviate ./weaviate-0.0.1.tgz
 ```
-
-[TODO] More secure Helm setup
