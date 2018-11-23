@@ -10,7 +10,7 @@ image:
   # tag of image to deploy
   tag: unstable
 
-importer: true
+importer: false
 
 autoscaling:
   enabled: false
