@@ -118,6 +118,51 @@ class Submitter {
     });
   }
 
+  async actionClasses(classes: Array<any>) {
+    let succeeded = 0;
+    let failed = 0;
+
+    const handleSuccess = (actionClass, start) => (res) => {
+      log.green(`Successfully submitted actionClass ${actionClass.class} to weaviate (Status ${res.status})`);
+      succeeded += 1;
+      this.addMonitoring({
+        verb: 'create',
+        resource: 'schema/action',
+        success: true,
+        hrtime: process.hrtime(start),
+      });
+    };
+
+    const handleError = (actionClass, start) => (err) => {
+      log.red(`Could not submit actionClass ${actionClass.class} to weaviate (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+      this.addMonitoring({
+        verb: 'create',
+        resource: 'schema/action',
+        success: false,
+        hrtime: process.hrtime(start),
+      });
+      failed += 1;
+    };
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const actionClass of classes) {
+      const start = process.hrtime();
+      // eslint-disable-next-line no-await-in-loop
+      await this.client
+        .apis
+        .schema
+        .weaviate_schema_actions_create({ actionClass })
+        .then(handleSuccess(actionClass, start))
+        .catch(handleError(actionClass, start));
+    }
+
+    this.addStatus({
+      description: 'Ontology Creation (creating Things without cross-references)',
+      succeeded,
+      failed,
+    });
+  }
+
   async thingClassReferences(references: Array<any>) {
     let succeeded = 0;
     let failed = 0;

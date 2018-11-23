@@ -4,6 +4,7 @@ const yargs = require('yargs');
 
 type Amounts = {
   thingClasses: number,
+  actionClasses: number,
   vertices: number,
   crossReferences: number,
 }
@@ -43,17 +44,20 @@ module.exports = function parse(): GlobalOptions {
     .describe('v', 'Number of vertices (Things and Actions) to be generated')
     .alias('t', 'thing-classes')
     .describe('t', 'Number of Thing Classes in the ontology')
+    .alias('a', 'action-classes')
+    .describe('a', 'Number of Action Classes in the ontology')
     .alias('r', 'cross-references')
     .describe('r', 'Number of Classes that cross-references other classes')
     .alias('w', 'weaviate-origin')
     .describe('w', 'Origin of weaviate (e.g. http://weaviate:8080)')
-    .demandOption(['v', 't', 'r'])
+    .demandOption(['v', 't', 'a', 'r'])
     .help('h')
     .alias('h', 'help');
 
   return {
     amounts: {
       thingClasses: argv.t,
+      actionClasses: argv.a,
       vertices: argv.v,
       crossReferences: argv.r,
     },

@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 
-const { uniqueNumbersBetween, randomNumbersBetween } = require('./random');
+const { uniqueNumbersBetween, randomNumbersBetween, uniqueThingAndActionNames } = require('./random');
 const { thingClassFromName, thingFromClass } = require('./ontology');
 const { randomlyFillCrossReferences } = require('./thingsVerticesCrossReferences');
 const thingClassReferences = require('./thingsClassesCrossReferences');
@@ -37,17 +37,22 @@ function parseContextionary() {
   return words;
 }
 
-async function createThingClasses(options, words, submitter) {
+async function createThingClasses(options, classNames, words, submitter) {
   log.noBreak('Creating Thing Classes...');
-
-  const amount = options.amounts.thingClasses;
-  const thingClasses = uniqueNumbersBetween(amount, words.length - 1)
-    .map(wordIndex => thingClassFromName(words[wordIndex], words));
-
+  const thingClasses = classNames.map(name => thingClassFromName(name, words));
   await submitter.thingClasses(thingClasses);
   log.green(` created ${options.amounts.thingClasses} thing classes without cross-references.`);
   return thingClasses;
 }
+
+async function createActionClasses(options, classNames, words, submitter) {
+  log.noBreak('Creating Action Classes...');
+  const actionClasses = classNames.map(name => thingClassFromName(name, words));
+  await submitter.actionClasses(actionClasses);
+  log.green(` created ${options.amounts.actionClasses} action classes without cross-references.`);
+  return actionClasses;
+}
+
 
 async function createThingVertices(options, thingClasses, submitter) {
   const create = amount => (
@@ -94,8 +99,10 @@ async function populateCrossReferencesForThingVertices(
 async function main() {
   const { options, submitter } = await init();
   const words = parseContextionary();
+  const { thingClassNames, actionClassNames } = uniqueThingAndActionNames(options, words);
 
-  const thingClasses = await createThingClasses(options, words, submitter);
+  const thingClasses = await createThingClasses(options, thingClassNames, words, submitter);
+  await createActionClasses(options, actionClassNames, words, submitter);
   const thingVertices = await createThingVertices(options, thingClasses, submitter);
   const thingClassesWithRefs = await addCrossRefsToThingClasses(options, thingClasses, submitter);
   await populateCrossReferencesForThingVertices(
