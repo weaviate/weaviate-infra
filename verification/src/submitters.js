@@ -218,7 +218,7 @@ class Submitter {
       vertex.uuid = res.body.actionId;
       this.addMonitoring({
         verb: 'create',
-        resource: 'action',
+        resource: thingOrAction,
         success: true,
         hrtime: process.hrtime(start),
       });
