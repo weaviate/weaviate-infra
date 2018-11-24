@@ -6,10 +6,10 @@
 * [ ] add support for actions (should be identical to things)
   * [x] generate action classes
   * [x] submit action classes
-  * [ ] generate action vertices
-  * [ ] submit action vertices
-  * [ ] add-cross-refs to ontolgy
-  * [ ] submit cross-refs to ontology
+  * [x] generate action vertices
+  * [x] submit action vertices
+  * [x] add-cross-refs to ontolgy
+  * [x] submit cross-refs to ontology
   * [ ] populate cross-refs (things for thing/actions for actions)
   * [ ] submit cross-refs 
 * [x] generate fixed number of things in ontology
