@@ -9,7 +9,7 @@ export type Property = {
 
 }
 
-export type ThingClass = {
+export type ThingOrActionClass = {
   class: string,
   description: string,
   properties: Array<Property>
@@ -51,7 +51,7 @@ function randomProperties(min: number, max: number, words: Array<string>): Array
 
 // clasFromName can be used for both thing classes, as well as
 // action classes
-function classFromName(className: string, words: Array<string>): ThingClass {
+function classFromName(className: string, words: Array<string>): ThingOrActionClass {
   return {
     class: capitalizeWord(className),
     description: 'No description on this auto-generated thing',
@@ -70,7 +70,7 @@ function valueForType(type: string): string | number | boolean {
   }
 }
 
-function vertexFromClass(schemaClass: ThingClass) {
+function vertexFromClass(schemaClass: ThingOrActionClass) {
   const props = schemaClass.properties.reduce((acc, cur) => ({
     ...acc,
     [cur.name]: valueForType(cur['@dataType'][0]),

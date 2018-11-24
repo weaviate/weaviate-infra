@@ -96,9 +96,10 @@ class BenchmarkReporter {
     process.stdout.write(table([
       headerRow(),
       ...this.tableRowGroup('create', 'schema/thing'),
-      ...this.tableRowGroup('create', 'schema/action'),
       ...this.tableRowGroup('create', 'schema/thing/property'),
       ...this.tableRowGroup('create', 'thing'),
+      ...this.tableRowGroup('create', 'schema/action'),
+      ...this.tableRowGroup('create', 'schema/action/property'),
       ...this.tableRowGroup('create', 'action'),
       ...this.tableRowGroup('patch (add cross-ref)', 'thing'),
     ]));

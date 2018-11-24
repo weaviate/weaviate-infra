@@ -163,7 +163,7 @@ class Submitter {
     });
   }
 
-  async thingClassReferences(references: Array<any>) {
+  classReferences = (thingOrAction: string) => async (references: Array<any>) => {
     let succeeded = 0;
     let failed = 0;
 
@@ -171,7 +171,7 @@ class Submitter {
       log.green(`Successfully added cross-ref on ${reference.className} to ${reference.body['@dataType'][0]} (Status ${res.status})`);
       this.addMonitoring({
         verb: 'create',
-        resource: 'schema/thing/property',
+        resource: `schema/${thingOrAction}/property`,
         success: true,
         hrtime: process.hrtime(start),
       });
@@ -182,7 +182,7 @@ class Submitter {
       log.red(`Could not create cross-ref on ${reference.className} to ${reference.body['@dataType'][0]} (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
       this.addMonitoring({
         verb: 'create',
-        resource: 'schema/thing/property',
+        resource: `schema/${thingOrAction}/property`,
         success: false,
         hrtime: process.hrtime(start),
       });
@@ -195,18 +195,21 @@ class Submitter {
       // eslint-disable-next-line no-await-in-loop
       await this.client
         .apis
-        .schema
-        .weaviate_schema_things_properties_add(reference)
+        .schema[`weaviate_schema_${thingOrAction}s_properties_add`](reference)
         .then(handleSuccess(reference, start))
         .catch(handleError(reference, start));
     }
 
     this.addStatus({
-      description: 'Ontology Updates (create cross-references between existing Thing Classes)',
+      description: `Ontology Updates (create cross-references between existing ${thingOrAction} classes)`,
       succeeded,
       failed,
     });
   }
+
+  thingClassReferences = this.classReferences('thing')
+
+  actionClassReferences = this.classReferences('action')
 
   vertices = (thingOrAction: string) => async (vertices: Array<any>) => {
     let succeeded = 0;

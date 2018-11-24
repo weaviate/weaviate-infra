@@ -5,7 +5,7 @@ const fs = require('fs');
 const { randomNumbersBetween, uniqueThingAndActionNames } = require('./random');
 const { classFromName, vertexFromClass } = require('./ontology');
 const { randomlyFillCrossReferences } = require('./thingsVerticesCrossReferences');
-const thingClassReferences = require('./thingsClassesCrossReferences');
+const crossReferences = require('./thingsClassesCrossReferences');
 const parseOptions = require('./options');
 const createSwaggerClient = require('./swagger');
 const Submitter = require('./submitters');
@@ -69,31 +69,31 @@ async function createVertices(options, schemaClasses, submitter, type) {
   return submitter(vertices);
 }
 
-async function addCrossRefsToThingClasses(options, thingClasses, submitter) {
+async function addCrossRefsToClasses(options, thingClasses, submitter) {
   log.noBreak('Creating Cross-References in ontology...');
   const amount = options.amounts.crossReferences;
-  const result = thingClassReferences.randomCrossReferences(amount, thingClasses);
+  const result = crossReferences.randomCrossReferences(amount, thingClasses);
   log.green(` created ${amount} cross-references.`);
 
-  await submitter.thingClassReferences(result.newReferences);
-  return result.thingClasses;
+  await submitter(result.newReferences);
+  return result.schemaClasses;
 }
 
-async function populateCrossReferencesForThingVertices(
-  thingClasses, thingVertices, submitter, options,
+async function populateCrossReferencesForVertices(
+  schemaClasses, vertexVertices, submitter, options,
 ) {
-  const withThingId = thing => (!!thing.uuid);
-  let thingVerticesWithRefs = thingVertices.filter(withThingId);
+  const withId = vertex => (!!vertex.uuid);
+  let verticesWithRefs = vertexVertices.filter(withId);
   let newReferences = [];
-  thingClasses.forEach((thingClass) => {
-    log.noBreak(`Populating all cross-refs on vertices of class ${thingClass.class}...`);
-    const result = randomlyFillCrossReferences(thingVerticesWithRefs, thingClass, options);
-    thingVerticesWithRefs = result.vertices;
+  schemaClasses.forEach((schemaClass) => {
+    log.noBreak(`Populating all cross-refs on vertices of class ${schemaClass.class}...`);
+    const result = randomlyFillCrossReferences(verticesWithRefs, schemaClass, options);
+    verticesWithRefs = result.vertices;
     newReferences = [...newReferences, ...result.newReferences];
     log.green(' done');
   });
   await submitter.thingVerticesReferences(newReferences);
-  return thingVerticesWithRefs;
+  return verticesWithRefs;
 }
 
 async function main() {
@@ -112,10 +112,16 @@ async function main() {
   const actionVertices = await createVertices(options, actionClasses, submitter.actionVertices, 'Action');
   debug('Action Vertices after creation/sending', actionVertices);
 
-  const thingClassesWithRefs = await addCrossRefsToThingClasses(options, thingClasses, submitter);
-  debug('ThingClasses with cross-references after sending', thingClassesWithRefs);
+  const thingClassesWithRefs = await addCrossRefsToClasses(
+    options, thingClasses, submitter.thingClassReferences,
+  );
+  debug('Thing Classes with cross-references after sending', thingClassesWithRefs);
+  const actionClassesWithRefs = await addCrossRefsToClasses(
+    options, actionClasses, submitter.actionClassReferences,
+  );
+  debug('Action Classes with cross-references after sending', actionClassesWithRefs);
 
-  await populateCrossReferencesForThingVertices(
+  await populateCrossReferencesForVertices(
     thingClassesWithRefs, thingVertices, submitter, options,
   );
 
