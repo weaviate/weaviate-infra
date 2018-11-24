@@ -218,7 +218,7 @@ class Submitter {
     const handleSuccess = (vertex, start) => (res) => {
       log.green(`Successfully submitted ${thingOrAction} vertex of type ${vertex.class} to weaviate (Status ${res.status})`);
       // eslint-disable-next-line no-param-reassign
-      vertex.uuid = res.body.actionId;
+      vertex.uuid = res.body[`${thingOrAction}Id`];
       this.addMonitoring({
         verb: 'create',
         resource: thingOrAction,

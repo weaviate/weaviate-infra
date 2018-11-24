@@ -80,18 +80,20 @@ async function addCrossRefsToClasses(options, thingClasses, submitter) {
 }
 
 async function populateCrossReferencesForVertices(
-  schemaClasses, vertexVertices, submitter, options,
+  schemaClasses, vertices, submitter, options, debug,
 ) {
   const withId = vertex => (!!vertex.uuid);
-  let verticesWithRefs = vertexVertices.filter(withId);
+  let verticesWithRefs = vertices.filter(withId);
   let newReferences = [];
   schemaClasses.forEach((schemaClass) => {
     log.noBreak(`Populating all cross-refs on vertices of class ${schemaClass.class}...`);
     const result = randomlyFillCrossReferences(verticesWithRefs, schemaClass, options);
+    debug('result for one vertex after cross-ref population', result);
     verticesWithRefs = result.vertices;
     newReferences = [...newReferences, ...result.newReferences];
     log.green(' done');
   });
+  debug('new references to be submitted', newReferences);
   await submitter.thingVerticesReferences(newReferences);
   return verticesWithRefs;
 }
@@ -122,7 +124,7 @@ async function main() {
   debug('Action Classes with cross-references after sending', actionClassesWithRefs);
 
   await populateCrossReferencesForVertices(
-    thingClassesWithRefs, thingVertices, submitter, options,
+    thingClassesWithRefs, thingVertices, submitter, options, debug,
   );
 
   submitter.printBenchmark();
