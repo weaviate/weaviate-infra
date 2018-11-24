@@ -11,9 +11,9 @@ type Status = {
   failed: number,
 }
 
-function referenceToPatchDoc(reference) {
+function referenceToPatchDoc(reference, thingOrAction) {
   return {
-    thingId: reference.thingId,
+    [`${thingOrAction}Id`]: reference.uuid,
     body: [
       {
         op: 'add',
@@ -72,27 +72,26 @@ class Submitter {
     new BenchmarkReporter(this.monitoring).print();
   }
 
-
-  async thingClasses(classes: Array<any>) {
+  classes = (thingOrAction: string) => async (classes: Array<any>) => {
     let succeeded = 0;
     let failed = 0;
 
-    const handleSuccess = (thingClass, start) => (res) => {
-      log.green(`Successfully submitted thingClass ${thingClass.class} to weaviate (Status ${res.status})`);
+    const handleSuccess = (schemaClass, start) => (res) => {
+      log.green(`Successfully submitted ${thingOrAction} class ${schemaClass.class} to weaviate (Status ${res.status})`);
       succeeded += 1;
       this.addMonitoring({
         verb: 'create',
-        resource: 'schema/thing',
+        resource: `schema/${thingOrAction}`,
         success: true,
         hrtime: process.hrtime(start),
       });
     };
 
-    const handleError = (thingClass, start) => (err) => {
-      log.red(`Could not submit thingClass ${thingClass.class} to weaviate (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+    const handleError = (schemaClass, start) => (err) => {
+      log.red(`Could not submit ${thingOrAction} class ${schemaClass.class} to weaviate (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
       this.addMonitoring({
         verb: 'create',
-        resource: 'schema/thing',
+        resource: `schema/${thingOrAction}`,
         success: false,
         hrtime: process.hrtime(start),
       });
@@ -100,68 +99,26 @@ class Submitter {
     };
 
     // eslint-disable-next-line no-restricted-syntax
-    for (const thingClass of classes) {
+    for (const schemaClass of classes) {
       const start = process.hrtime();
       // eslint-disable-next-line no-await-in-loop
       await this.client
         .apis
-        .schema
-        .weaviate_schema_things_create({ thingClass })
-        .then(handleSuccess(thingClass, start))
-        .catch(handleError(thingClass, start));
+        .schema[`weaviate_schema_${thingOrAction}s_create`]({ [`${thingOrAction}Class`]: schemaClass })
+        .then(handleSuccess(schemaClass, start))
+        .catch(handleError(schemaClass, start));
     }
 
     this.addStatus({
-      description: 'Ontology Creation (creating Things without cross-references)',
+      description: `Ontology Creation (creating ${thingOrAction}s without cross-references)`,
       succeeded,
       failed,
     });
   }
 
-  async actionClasses(classes: Array<any>) {
-    let succeeded = 0;
-    let failed = 0;
+  thingClasses = this.classes('thing')
 
-    const handleSuccess = (actionClass, start) => (res) => {
-      log.green(`Successfully submitted actionClass ${actionClass.class} to weaviate (Status ${res.status})`);
-      succeeded += 1;
-      this.addMonitoring({
-        verb: 'create',
-        resource: 'schema/action',
-        success: true,
-        hrtime: process.hrtime(start),
-      });
-    };
-
-    const handleError = (actionClass, start) => (err) => {
-      log.red(`Could not submit actionClass ${actionClass.class} to weaviate (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
-      this.addMonitoring({
-        verb: 'create',
-        resource: 'schema/action',
-        success: false,
-        hrtime: process.hrtime(start),
-      });
-      failed += 1;
-    };
-
-    // eslint-disable-next-line no-restricted-syntax
-    for (const actionClass of classes) {
-      const start = process.hrtime();
-      // eslint-disable-next-line no-await-in-loop
-      await this.client
-        .apis
-        .schema
-        .weaviate_schema_actions_create({ actionClass })
-        .then(handleSuccess(actionClass, start))
-        .catch(handleError(actionClass, start));
-    }
-
-    this.addStatus({
-      description: 'Ontology Creation (creating Things without cross-references)',
-      succeeded,
-      failed,
-    });
-  }
+  actionClasses = this.classes('action')
 
   classReferences = (thingOrAction: string) => async (references: Array<any>) => {
     let succeeded = 0;
@@ -265,7 +222,7 @@ class Submitter {
 
   thingVertices = this.vertices('thing')
 
-  async thingVerticesReferences(references: Array<any>) {
+  verticesReferences = (thingOrAction: string) => async (references: Array<any>) => {
     let succeeded = 0;
     let failed = 0;
 
@@ -273,11 +230,11 @@ class Submitter {
       const elapsed = process.hrtime(start);
       this.addMonitoring({
         verb: 'patch (add cross-ref)',
-        resource: 'thing',
+        resource: thingOrAction,
         success: true,
         hrtime: process.hrtime(start),
       });
-      log.green(`Successfully added cross-ref from ${reference.thingId} to `
+      log.green(`Successfully added cross-ref from ${reference.uuid} to `
         + `${reference.body.$cref} (Status ${res.status}), took ${formatElapsed(elapsed)}`);
       succeeded += 1;
     };
@@ -285,7 +242,7 @@ class Submitter {
     const handleError = (reference, start) => (err) => {
       this.addMonitoring({
         verb: 'patch (add cross-ref)',
-        resource: 'thing',
+        resource: thingOrAction,
         success: false,
         hrtime: process.hrtime(start),
       });
@@ -299,19 +256,23 @@ class Submitter {
       const start = process.hrtime();
       // eslint-disable-next-line no-await-in-loop
       await this.client
-        .apis
-        .things
-        .weaviate_things_patch(referenceToPatchDoc(reference))
+        .apis[`${thingOrAction}s`][`weaviate_${thingOrAction}s_patch`](
+          referenceToPatchDoc(reference, thingOrAction),
+        )
         .then(handleSuccess(reference, start))
         .catch(handleError(reference));
     }
 
     this.addStatus({
-      description: 'Update Thing Vertices (fill cross-references to other Things)',
+      description: `Update ${thingOrAction} vertices (fill cross-references to other ${thingOrAction}s)`,
       succeeded,
       failed,
     });
   }
+
+  thingVerticesReferences = this.verticesReferences('thing')
+
+  actionVerticesReferences = this.verticesReferences('action')
 }
 
 

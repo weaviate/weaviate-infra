@@ -10,7 +10,7 @@ const getRandomThingOfClass = (matchingClassName, vertices) => {
   return allMatchingVertices[Math.floor(Math.random() * allMatchingVertices.length)];
 };
 
-const populateCrossReferencesOnVertices = (vertices, classToPopulate, options) => (vertex) => {
+const populateCrossReferencesOnVertices = (vertices, classToPopulate, thingOrAction, options) => (vertex) => {
   if (vertex.class !== classToPopulate.class) {
     return {
       thingVertex: vertex,
@@ -42,7 +42,7 @@ const populateCrossReferencesOnVertices = (vertices, classToPopulate, options) =
       ...acc,
       [cur.name]: {
         $cref: target.uuid,
-        type: 'Thing',
+        type: thingOrAction,
         locationUrl: options.serviceDiscovery.weaviateOrigin,
       },
     };
@@ -54,17 +54,19 @@ const populateCrossReferencesOnVertices = (vertices, classToPopulate, options) =
       ...newReferences,
     },
     newReferences: Object.keys(newReferences).map(propertyName => ({
-      thingId: vertex.uuid,
+      uuid: vertex.uuid,
       propertyName,
       body: newReferences[propertyName],
     })),
   };
 };
 
-function randomlyFillCrossReferences(vertices, classToPopulate, options) {
+function randomlyFillCrossReferences(vertices, classToPopulate, thingOrAction, options) {
   let newReferences = [];
   const updatedVertices = vertices.map((vertex) => {
-    const result = populateCrossReferencesOnVertices(vertices, classToPopulate, options)(vertex);
+    const result = populateCrossReferencesOnVertices(
+      vertices, classToPopulate, thingOrAction, options,
+    )(vertex);
     newReferences = [...newReferences, ...result.newReferences];
     return result.thingVertex;
   });

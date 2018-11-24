@@ -102,6 +102,7 @@ class BenchmarkReporter {
       ...this.tableRowGroup('create', 'schema/action/property'),
       ...this.tableRowGroup('create', 'action'),
       ...this.tableRowGroup('patch (add cross-ref)', 'thing'),
+      ...this.tableRowGroup('patch (add cross-ref)', 'action'),
     ]));
   }
 }

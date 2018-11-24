@@ -37,22 +37,13 @@ function parseContextionary() {
   return words;
 }
 
-async function createThingClasses(options, classNames, words, submitter) {
+async function createClasses(options, classNames, words, submitter) {
   log.noBreak('Creating Thing Classes...');
-  const thingClasses = classNames.map(name => classFromName(name, words));
-  await submitter.thingClasses(thingClasses);
-  log.green(` created ${options.amounts.thingClasses} thing classes without cross-references.`);
-  return thingClasses;
+  const schemaClasses = classNames.map(name => classFromName(name, words));
+  await submitter(schemaClasses);
+  log.green(` created ${schemaClasses.length} classes without cross-references.`);
+  return schemaClasses;
 }
-
-async function createActionClasses(options, classNames, words, submitter) {
-  log.noBreak('Creating Action Classes...');
-  const actionClasses = classNames.map(name => classFromName(name, words));
-  await submitter.actionClasses(actionClasses);
-  log.green(` created ${options.amounts.actionClasses} action classes without cross-references.`);
-  return actionClasses;
-}
-
 
 async function createVertices(options, schemaClasses, submitter, type) {
   const create = amount => (
@@ -80,21 +71,23 @@ async function addCrossRefsToClasses(options, thingClasses, submitter) {
 }
 
 async function populateCrossReferencesForVertices(
-  schemaClasses, vertices, submitter, options, debug,
+  schemaClasses, vertices, submitter, thingOrAction, options, debug,
 ) {
   const withId = vertex => (!!vertex.uuid);
   let verticesWithRefs = vertices.filter(withId);
   let newReferences = [];
   schemaClasses.forEach((schemaClass) => {
     log.noBreak(`Populating all cross-refs on vertices of class ${schemaClass.class}...`);
-    const result = randomlyFillCrossReferences(verticesWithRefs, schemaClass, options);
+    const result = randomlyFillCrossReferences(
+      verticesWithRefs, schemaClass, thingOrAction, options,
+    );
     debug('result for one vertex after cross-ref population', result);
     verticesWithRefs = result.vertices;
     newReferences = [...newReferences, ...result.newReferences];
     log.green(' done');
   });
   debug('new references to be submitted', newReferences);
-  await submitter.thingVerticesReferences(newReferences);
+  await submitter(newReferences);
   return verticesWithRefs;
 }
 
@@ -104,9 +97,13 @@ async function main() {
   const words = parseContextionary();
   const { thingClassNames, actionClassNames } = uniqueThingAndActionNames(options, words);
 
-  const thingClasses = await createThingClasses(options, thingClassNames, words, submitter);
+  const thingClasses = await createClasses(
+    options, thingClassNames, words, submitter.thingClasses,
+  );
   debug('Thing Classes after creation/sending', thingClasses);
-  const actionClasses = await createActionClasses(options, actionClassNames, words, submitter);
+  const actionClasses = await createClasses(
+    options, actionClassNames, words, submitter.actionClasses,
+  );
   debug('Action Classes after creation/sending', actionClasses);
 
   const thingVertices = await createVertices(options, thingClasses, submitter.thingVertices, 'Thing');
@@ -124,7 +121,11 @@ async function main() {
   debug('Action Classes with cross-references after sending', actionClassesWithRefs);
 
   await populateCrossReferencesForVertices(
-    thingClassesWithRefs, thingVertices, submitter, options, debug,
+    thingClassesWithRefs, thingVertices, submitter.thingVerticesReferences, 'Thing', options, debug,
+  );
+
+  await populateCrossReferencesForVertices(
+    actionClassesWithRefs, actionVertices, submitter.actionVerticesReferences, 'Action', options, debug,
   );
 
   submitter.printBenchmark();
