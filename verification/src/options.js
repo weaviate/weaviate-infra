@@ -18,10 +18,15 @@ type ServiceDiscovery = {
   weaviateOrigin: string,
 }
 
+type Modes = {
+  debug: boolean,
+}
+
 export type GlobalOptions = {
   amounts: Amounts,
   authorization: Authorization,
   serviceDiscovery: ServiceDiscovery,
+  modes: Modes,
 }
 
 // non-configurable options & defaults
@@ -50,6 +55,8 @@ module.exports = function parse(): GlobalOptions {
     .describe('r', 'Number of Classes that cross-references other classes')
     .alias('w', 'weaviate-origin')
     .describe('w', 'Origin of weaviate (e.g. http://weaviate:8080)')
+    .alias('d', 'debug')
+    .describe('d', 'Turn on debug mode. Prints results after each step.')
     .demandOption(['v', 't', 'a', 'r'])
     .help('h')
     .alias('h', 'help');
@@ -67,6 +74,9 @@ module.exports = function parse(): GlobalOptions {
     },
     serviceDiscovery: {
       weaviateOrigin: argv.w,
+    },
+    modes: {
+      debug: !!argv.d,
     },
   };
 };

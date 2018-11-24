@@ -60,9 +60,9 @@ class Submitter {
       log.normal(task.description);
       log.bold('------------');
       log.boldNoBreak('Success: ');
-      log.green(task.succeeded);
+      log.green(`${task.succeeded}`);
       log.boldNoBreak('Failed: ');
-      log.red(task.failed);
+      log.red(`${task.failed}`);
       log.boldNoBreak('Success Rate: ');
       log.normal(`${Math.floor(task.succeeded / (task.failed + task.succeeded) * 100)} %`);
     });

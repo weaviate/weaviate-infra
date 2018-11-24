@@ -98,13 +98,18 @@ async function populateCrossReferencesForThingVertices(
 
 async function main() {
   const { options, submitter } = await init();
+  const debug = log.makeDebugger(options);
   const words = parseContextionary();
   const { thingClassNames, actionClassNames } = uniqueThingAndActionNames(options, words);
 
   const thingClasses = await createThingClasses(options, thingClassNames, words, submitter);
-  await createActionClasses(options, actionClassNames, words, submitter);
+  debug('Thing Classes after creation/sending', thingClasses);
+  const actionClasses = await createActionClasses(options, actionClassNames, words, submitter);
+  debug('Action Classes after creation/sending', actionClasses);
   const thingVertices = await createThingVertices(options, thingClasses, submitter);
+  debug('ThingVertices after creation/sending', thingVertices);
   const thingClassesWithRefs = await addCrossRefsToThingClasses(options, thingClasses, submitter);
+  debug('ThingClasses with cross-references after sending', thingClassesWithRefs);
   await populateCrossReferencesForThingVertices(
     thingClassesWithRefs, thingVertices, submitter, options,
   );
