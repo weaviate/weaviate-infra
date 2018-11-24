@@ -208,28 +208,29 @@ class Submitter {
     });
   }
 
-  async thingVertices(vertices: Array<any>) {
+  vertices = (thingOrAction: string) => async (vertices: Array<any>) => {
     let succeeded = 0;
     let failed = 0;
 
-    const handleSuccess = (thingVertex, start) => (res) => {
-      log.green(`Successfully submitted thingVertex of type ${thingVertex.class} to weaviate (Status ${res.status})`);
+    const handleSuccess = (vertex, start) => (res) => {
+      log.green(`Successfully submitted ${thingOrAction} vertex of type ${vertex.class} to weaviate (Status ${res.status})`);
       // eslint-disable-next-line no-param-reassign
-      thingVertex.uuid = res.body.thingId;
+      vertex.uuid = res.body.actionId;
       this.addMonitoring({
         verb: 'create',
-        resource: 'thing',
+        resource: 'action',
         success: true,
         hrtime: process.hrtime(start),
       });
       succeeded += 1;
     };
 
-    const handleError = (thingVertex, start) => (err) => {
-      log.red(`Could not submit thingVertex of type ${thingVertex.class} to weaviate (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+    const handleError = (vertex, start) => (err) => {
+      log.red(err);
+      log.red(`Could not submit ${thingOrAction} vertex of type ${vertex.class} to weaviate (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
       this.addMonitoring({
         verb: 'create',
-        resource: 'thing',
+        resource: 'action',
         success: false,
         hrtime: process.hrtime(start),
       });
@@ -237,26 +238,29 @@ class Submitter {
     };
 
     // eslint-disable-next-line no-restricted-syntax
-    for (const thingVertex of vertices) {
-      const { class: className, ...schema } = thingVertex;
+    for (const vertex of vertices) {
+      const { class: className, ...schema } = vertex;
       const start = process.hrtime();
       // eslint-disable-next-line no-await-in-loop
       await this.client
-        .apis
-        .things
-        .weaviate_things_create({ body: { asnyc: false, thing: { '@class': className, '@context': 'some-context', schema } } })
-        .then(handleSuccess(thingVertex, start))
-        .catch(handleError(thingVertex, start));
+        .apis[`${thingOrAction}s`][`weaviate_${thingOrAction}s_create`](
+          { body: { asnyc: false, [thingOrAction]: { '@class': className, '@context': 'some-context', schema } } },
+        )
+        .then(handleSuccess(vertex, start))
+        .catch(handleError(vertex, start));
     }
 
     this.addStatus({
-      description: 'Create Thing Vertices (vertices of various thingClasses with only primitive properties)',
+      description: `Create ${thingOrAction} vertices (vertices of various actionClasses with only primitive properties)`,
       succeeded,
       failed,
     });
     return vertices;
   }
 
+  actionVertices = this.vertices('action')
+
+  thingVertices = this.vertices('thing')
 
   async thingVerticesReferences(references: Array<any>) {
     let succeeded = 0;

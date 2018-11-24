@@ -49,7 +49,9 @@ function randomProperties(min: number, max: number, words: Array<string>): Array
   return properties;
 }
 
-function thingClassFromName(className: string, words: Array<string>): ThingClass {
+// clasFromName can be used for both thing classes, as well as
+// action classes
+function classFromName(className: string, words: Array<string>): ThingClass {
   return {
     class: capitalizeWord(className),
     description: 'No description on this auto-generated thing',
@@ -68,20 +70,20 @@ function valueForType(type: string): string | number | boolean {
   }
 }
 
-function thingFromClass(thingClass: ThingClass) {
-  const props = thingClass.properties.reduce((acc, cur) => ({
+function vertexFromClass(schemaClass: ThingClass) {
+  const props = schemaClass.properties.reduce((acc, cur) => ({
     ...acc,
     [cur.name]: valueForType(cur['@dataType'][0]),
   }), {});
 
   return {
-    class: thingClass.class,
+    class: schemaClass.class,
     ...props,
   };
 }
 
 module.exports = {
-  thingClassFromName,
-  thingFromClass,
+  classFromName,
+  vertexFromClass,
   primitiveDataTypes,
 };

@@ -2,8 +2,8 @@
 
 const fs = require('fs');
 
-const { uniqueNumbersBetween, randomNumbersBetween, uniqueThingAndActionNames } = require('./random');
-const { thingClassFromName, thingFromClass } = require('./ontology');
+const { randomNumbersBetween, uniqueThingAndActionNames } = require('./random');
+const { classFromName, vertexFromClass } = require('./ontology');
 const { randomlyFillCrossReferences } = require('./thingsVerticesCrossReferences');
 const thingClassReferences = require('./thingsClassesCrossReferences');
 const parseOptions = require('./options');
@@ -39,7 +39,7 @@ function parseContextionary() {
 
 async function createThingClasses(options, classNames, words, submitter) {
   log.noBreak('Creating Thing Classes...');
-  const thingClasses = classNames.map(name => thingClassFromName(name, words));
+  const thingClasses = classNames.map(name => classFromName(name, words));
   await submitter.thingClasses(thingClasses);
   log.green(` created ${options.amounts.thingClasses} thing classes without cross-references.`);
   return thingClasses;
@@ -47,26 +47,26 @@ async function createThingClasses(options, classNames, words, submitter) {
 
 async function createActionClasses(options, classNames, words, submitter) {
   log.noBreak('Creating Action Classes...');
-  const actionClasses = classNames.map(name => thingClassFromName(name, words));
+  const actionClasses = classNames.map(name => classFromName(name, words));
   await submitter.actionClasses(actionClasses);
   log.green(` created ${options.amounts.actionClasses} action classes without cross-references.`);
   return actionClasses;
 }
 
 
-async function createThingVertices(options, thingClasses, submitter) {
+async function createVertices(options, schemaClasses, submitter, type) {
   const create = amount => (
-    randomNumbersBetween(amount, thingClasses.length)
-      .map(i => thingClasses[i])
-      .map(thingClass => thingFromClass(thingClass))
+    randomNumbersBetween(amount, schemaClasses.length)
+      .map(i => schemaClasses[i])
+      .map(schemaClass => vertexFromClass(schemaClass))
   );
 
-  log.noBreak('Creating Thing Vertices...');
-  const thingVertices = create(options.amounts.vertices);
-  log.green(` created ${options.amounts.vertices} thing vertices without cross-references.`);
+  log.noBreak(`Creating ${type} Vertices...`);
+  const vertices = create(options.amounts.vertices);
+  log.green(` created ${options.amounts.vertices} ${type} vertices without cross-references.`);
 
   // submit will return thingVertices enriched with uuids assigned by weaviate
-  return submitter.thingVertices(thingVertices);
+  return submitter(vertices);
 }
 
 async function addCrossRefsToThingClasses(options, thingClasses, submitter) {
@@ -106,10 +106,15 @@ async function main() {
   debug('Thing Classes after creation/sending', thingClasses);
   const actionClasses = await createActionClasses(options, actionClassNames, words, submitter);
   debug('Action Classes after creation/sending', actionClasses);
-  const thingVertices = await createThingVertices(options, thingClasses, submitter);
-  debug('ThingVertices after creation/sending', thingVertices);
+
+  const thingVertices = await createVertices(options, thingClasses, submitter.thingVertices, 'Thing');
+  debug('Thing Vertices after creation/sending', thingVertices);
+  const actionVertices = await createVertices(options, actionClasses, submitter.actionVertices, 'Action');
+  debug('Action Vertices after creation/sending', actionVertices);
+
   const thingClassesWithRefs = await addCrossRefsToThingClasses(options, thingClasses, submitter);
   debug('ThingClasses with cross-references after sending', thingClassesWithRefs);
+
   await populateCrossReferencesForThingVertices(
     thingClassesWithRefs, thingVertices, submitter, options,
   );
