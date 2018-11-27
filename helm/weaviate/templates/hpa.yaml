@@ -8,11 +8,11 @@ spec:
     apiVersion: apps/v1beta1
     kind: Deployment
     name: weaviate
-  minReplicas: {{ .Values.replicas }}
-  maxReplicas: {{ .Values.replicasMax }}
+  minReplicas: {{ .Values.autoscaling.replicasMin }}
+  maxReplicas: {{ .Values.autoscaling.replicasMax }}
   metrics:
   - type: Resource
     resource:
       name: cpu
-      targetAverageUtilization: {{ .Values.cpuTargetPercentage }}
+      targetAverageUtilization: {{ .Values.autoscaling.cpuTargetPercentage }}
 {{- end }}

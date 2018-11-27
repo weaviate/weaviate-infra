@@ -42,14 +42,4 @@ helm repo update
 
 ### Install Weaviate
 
-Create Weaviate Helm Package
-```
-$ cd ./helm/
-$ helm package weaviate
-Successfully packaged chart and saved it to: /Users/iancrosby/code/weaviate-infra/helm/weaviate-0.0.1.tgz
-```
-
-Install Helm Chart
-```
-helm install --name weaviate ./weaviate-0.0.1.tgz
-```
+See: ./helm/weaviate/README.md
