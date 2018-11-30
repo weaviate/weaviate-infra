@@ -4,22 +4,28 @@ Goal: to document how the various pieces should be scaled.
 
 All non weaviate components (Cassandra, Elasticsearch, JanusGraph) should be scaled manually. Dynamically scaling datastores is generally not recommended. 
 
+You can manually scale each component with the following Helm commands, or simply update the `values.yaml` file and run: 
+
+```
+$ helm upgrade -f weaviate/values.yaml weaviate weaviate
+```
+
 ## Cassandra
 
 ```
-helm upgrade --set config.cluster_size=5 cassandra incubator/cassandra
+helm upgrade --set cassandra.config.cluster_size=5 weaviate ./weaviate
 ```
 
 ## JanusGraph:
 
 ```
-helm upgrade --set replicaCount=X janus stable/janusgraph
+helm upgrade --set janusgraph.replicaCount=X weaviate ./weaviate
 ```
 
 ## Elasticsearch
 
 ```
-helm upgrade --set client.replicas=X elasticsearch stable/elasticsearch
+helm upgrade --set elasticsearch.client.replicas=X weaviate ./weaviate
 ```
 
 ## Weaviate
