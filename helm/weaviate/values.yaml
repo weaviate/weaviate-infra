@@ -18,6 +18,13 @@ cpuTargetPercentage: 70
 replicas: 1
 replicasMax: 5 
 
+# Weaviate Config
+initialKey: 657a48b9-e000-4d9a-b51d-69a0b621c1b9
+initialToken: 57ac8392-1ecc-4e17-9350-c9c866ac832b
+contextionary:
+  knnFile: /contextionary/example.knn
+  idxFile: /contextionary/example.idx
+
 # Sub Chart Overrides
 
 #Cassandra
@@ -49,7 +56,7 @@ elasticsearch:
 janusgraph:
   image:
     repository: creativesoftwarefdn/janusgraph-docker
-    tag: latest
+    tag: 0.2.0
   elasticsearch.deploy:
     deploy: false
   configMapOverrideName: janusgraph-config
