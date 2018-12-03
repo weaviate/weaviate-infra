@@ -273,6 +273,58 @@ class Submitter {
   thingVerticesReferences = this.verticesReferences('thing')
 
   actionVerticesReferences = this.verticesReferences('action')
+
+  getAndCheckVertices = (thingOrAction: string) => async (vertices: Array<any>) => {
+    let succeeded = 0;
+    let failed = 0;
+
+    const handleSuccess = (vertex, start) => (res) => {
+      this.addMonitoring({
+        verb: 'get',
+        resource: thingOrAction,
+        success: true,
+        hrtime: process.hrtime(start),
+      });
+      log.green(`Successfully retrieved ${thingOrAction} vertex with uuid ${vertex.uuid} `
+      + `(Status: ${res.status})`);
+      succeeded += 1;
+    };
+
+    const handleError = (vertex, start) => (err) => {
+      this.addMonitoring({
+        verb: 'get',
+        resource: thingOrAction,
+        success: false,
+        hrtime: process.hrtime(start),
+      });
+      log.red(`Could not retrieve ${thingOrAction} with uuid ${vertex.uuid} `
+        + `(Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+      failed += 1;
+    };
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const vertex of vertices) {
+      const start = process.hrtime();
+      // eslint-disable-next-line no-await-in-loop
+      await this.client
+        .apis[`${thingOrAction}s`][`weaviate_${thingOrAction}s_get`](
+          { [`${thingOrAction}Id`]: vertex.uuid },
+        )
+        .then(handleSuccess(vertex, start))
+        .catch(handleError(vertex));
+    }
+
+    this.addStatus({
+      description: `Get ${thingOrAction} vertices`,
+      succeeded,
+      failed,
+    });
+  }
+
+
+  getAndCheckThingVertices = this.getAndCheckVertices('thing')
+
+  getAndCheckActionVertices = this.getAndCheckVertices('action')
 }
 
 
