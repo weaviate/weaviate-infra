@@ -41,7 +41,7 @@ class Verifier {
 
 
   async initContextionary() {
-    this.words = await initContextionary();
+    this.words = await initContextionary(this.options);
   }
 
   initClassNames() {

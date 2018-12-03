@@ -18,6 +18,7 @@ type Authorization = {
 
 type ServiceDiscovery = {
   weaviateOrigin: string,
+  contextionaryVersion: string,
 }
 
 type Modes = {
@@ -36,11 +37,15 @@ const apiKey = '657a48b9-e000-4d9a-b51d-69a0b621c1b9';
 const apiToken = '57ac8392-1ecc-4e17-9350-c9c866ac832b';
 const defaults = {
   weaviateOrigin: 'http://localhost:8080',
+  contextionaryVersion: 'latest',
 };
 
 module.exports = function parse(): GlobalOptions {
   const { argv } = yargs
-    .default({ w: defaults.weaviateOrigin })
+    .default({
+      w: defaults.weaviateOrigin,
+      'contextionary-version': defaults.contextionaryVersion,
+    })
     .usage('Usage: $0 <command> [options]')
     .command('generate', 'Generate dummy data based on options')
     .demandCommand(1)
@@ -61,6 +66,7 @@ module.exports = function parse(): GlobalOptions {
     .describe('d', 'Turn on debug mode. Prints results after each step.')
     .alias('c', 'checks')
     .describe('c', 'Number of Round-Robin checks to compare whether sent vertex matches retrieved vertex')
+    .describe('contextionary-version', 'Semver version for the contextionary. Should match the version used to start up weaviate with')
     .demandOption(['v', 't', 'a', 'r', 'c'])
     .help('h')
     .alias('h', 'help');
@@ -85,6 +91,7 @@ module.exports = function parse(): GlobalOptions {
     },
     serviceDiscovery: {
       weaviateOrigin: argv.w,
+      contextionaryVersion: argv['contextionary-version'],
     },
     modes: {
       debug: !!argv.d,
