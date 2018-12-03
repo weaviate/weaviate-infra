@@ -105,6 +105,8 @@ class BenchmarkReporter {
       ...this.tableRowGroup('patch (add cross-ref)', 'action'),
       ...this.tableRowGroup('get', 'thing'),
       ...this.tableRowGroup('get', 'action'),
+      tableRow('round-robin check', 'thing', 'SUCCESS_RATE', this.successRate),
+      tableRow('round-robin check', 'action', 'SUCCESS_RATE', this.successRate),
     ]));
   }
 }

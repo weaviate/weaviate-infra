@@ -3,6 +3,7 @@
 import type { Monitoring, Hrtime } from './benchmark';
 
 const BenchmarkReporter = require('./benchmark');
+const Comparer = require('./comparer');
 const log = require('./log');
 
 type Status = {
@@ -31,6 +32,8 @@ function formatElapsed(elapsed: Hrtime): string {
 class Submitter {
   client: any;
 
+  comparer: Comparer
+
   status: Array<Status>;
 
   monitoring: Array<Monitoring>;
@@ -39,13 +42,14 @@ class Submitter {
     this.client = client;
     this.status = [];
     this.monitoring = [];
+    this.comparer = new Comparer(this.addMonitoring);
   }
 
   addStatus(status: Status) {
     this.status.push(status);
   }
 
-  addMonitoring(entry: Monitoring) {
+  addMonitoring = (entry: Monitoring) => {
     this.monitoring.push(entry);
   }
 
@@ -288,6 +292,8 @@ class Submitter {
       log.green(`Successfully retrieved ${thingOrAction} vertex with uuid ${vertex.uuid} `
       + `(Status: ${res.status})`);
       succeeded += 1;
+
+      this.comparer.retrievedWithCached(res.body, vertex, thingOrAction);
     };
 
     const handleError = (vertex, start) => (err) => {

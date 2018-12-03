@@ -13,7 +13,11 @@ function number() {
 
 function date() {
   const unixTimeBetween1970and2020 = Math.floor(Math.random() * 1577836800);
-  return new Date(unixTimeBetween1970and2020).toISOString();
+  return new Date(unixTimeBetween1970and2020)
+    .toISOString()
+    // remove the milliseconds to match Golang's RFC3339 which is to the
+    // precision of seconds
+    .replace(/\.[0-9]{3}/, '');
 }
 
 function bool() {
