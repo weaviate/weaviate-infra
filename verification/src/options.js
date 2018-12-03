@@ -1,12 +1,14 @@
 // @flow
 
 const yargs = require('yargs');
+const log = require('./log');
 
 type Amounts = {
   thingClasses: number,
   actionClasses: number,
   vertices: number,
   crossReferences: number,
+  checks: number,
 }
 
 type Authorization = {
@@ -57,9 +59,17 @@ module.exports = function parse(): GlobalOptions {
     .describe('w', 'Origin of weaviate (e.g. http://weaviate:8080)')
     .alias('d', 'debug')
     .describe('d', 'Turn on debug mode. Prints results after each step.')
-    .demandOption(['v', 't', 'a', 'r'])
+    .alias('c', 'checks')
+    .describe('c', 'Number of Round-Robin checks to compare whether sent vertex matches retrieved vertex')
+    .demandOption(['v', 't', 'a', 'r', 'c'])
     .help('h')
     .alias('h', 'help');
+
+  if (argv.c > argv.v) {
+    log.red(`ERROR:\n\tDesired number of checks (${argv.c}) is larger than the number of `
+      + `desired vertices (${argv.v})`);
+    process.exit(1);
+  }
 
   return {
     amounts: {
@@ -67,6 +77,7 @@ module.exports = function parse(): GlobalOptions {
       actionClasses: argv.a,
       vertices: argv.v,
       crossReferences: argv.r,
+      checks: argv.c,
     },
     authorization: {
       apiKey,

@@ -31,7 +31,7 @@
 * [x] submit verticies to weaviate via REST API
   * [x] without cross-refs
   * [x] populate cross-refs
-* [ ] add validity checks (store created verticies in memory, query weaviate to see if
+* [x] add validity checks (store created verticies in memory, query weaviate to see if
   we get the expected results back)
 * [x] replace fixed numbers with dynamic values provided through CLI args
 * [x] make weaviate discovery URL/origin configurable

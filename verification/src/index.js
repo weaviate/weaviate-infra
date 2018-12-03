@@ -216,7 +216,7 @@ class Verifier {
   }
 
   async verifyVertices(vertices, submitter) {
-    const amount = 10;
+    const amount = this.options.amounts.checks;
     const verticesToCheck = randomNumbersBetween(amount, vertices.length).map(
       i => vertices[i],
     );
