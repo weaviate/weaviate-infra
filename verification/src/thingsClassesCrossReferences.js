@@ -37,10 +37,21 @@ type RandomCrossReferencesResult = {
   newReferences: Array<NewReference>,
 }
 
-const randomCrossReference = (classes: Array<ThingOrActionClass>): RandomCrossReferenceResult => {
+
+const existingRefsNotContained = list => ref => list.indexOf(ref.class) === -1;
+
+const sourceNotContained = source => c => c.class !== source.class;
+
+const randomCrossReference = (
+  classes: Array<ThingOrActionClass>, refsAlreadyAdded: Array<NewReference>,
+): RandomCrossReferenceResult => {
   const source = randomArrayItem(classes);
-  const sourceNotContained = c => c.class !== source.class;
-  const allOtherClasses = classes.filter(sourceNotContained);
+  const refsAlreadyAddedToThisSource = refsAlreadyAdded
+    .filter(r => r.className === source.class)
+    .map(r => r.body['@dataType'][0]);
+  const allOtherClasses = classes
+    .filter(sourceNotContained(source))
+    .filter(existingRefsNotContained(refsAlreadyAddedToThisSource));
   const target = randomArrayItem(allOtherClasses);
   const schemaClasses = classes.map((c) => {
     if (c.class === source.class) {
@@ -62,7 +73,7 @@ const randomCrossReferences = (
   let schemaClasses = classes;
   const newReferences = [];
   for (let i = 0; i < amount; i += 1) {
-    const result = randomCrossReference(schemaClasses);
+    const result = randomCrossReference(schemaClasses, newReferences);
     // eslint-disable-next-line prefer-destructuring
     schemaClasses = result.schemaClasses;
     newReferences.push(result.newReference);
