@@ -1,14 +1,16 @@
 // @flow
 
-import type { ThingClass, Property } from './ontology';
+import type { ThingOrActionClass, Property } from './ontology';
 
-const crossReferenceProperty = (target: ThingClass): Property => ({
+const crossReferenceProperty = (target: ThingOrActionClass): Property => ({
   name: `in${target.class}`,
   '@dataType': [target.class],
-  description: `A reference to the thing class '${target.class}'.`,
+  description: `A reference to the class '${target.class}'.`,
 });
 
-const addReferenceToOtherThingClass = (source: ThingClass, target: ThingClass): ThingClass => ({
+const addReferenceToOtherClass = (
+  source: ThingOrActionClass, target: ThingOrActionClass,
+): ThingOrActionClass => ({
   ...source,
   properties: [
     ...source.properties,
@@ -26,23 +28,23 @@ type NewReference = {
 }
 
 type RandomCrossReferenceResult = {
-  thingClasses: Array<ThingClass>,
+  schemaClasses: Array<ThingOrActionClass>,
   newReference: NewReference,
 }
 
 type RandomCrossReferencesResult = {
-  thingClasses: Array<ThingClass>,
+  schemaClasses: Array<ThingOrActionClass>,
   newReferences: Array<NewReference>,
 }
 
-const randomCrossReference = (classes: Array<ThingClass>): RandomCrossReferenceResult => {
+const randomCrossReference = (classes: Array<ThingOrActionClass>): RandomCrossReferenceResult => {
   const source = randomArrayItem(classes);
   const sourceNotContained = c => c.class !== source.class;
   const allOtherClasses = classes.filter(sourceNotContained);
   const target = randomArrayItem(allOtherClasses);
-  const thingClasses = classes.map((c) => {
+  const schemaClasses = classes.map((c) => {
     if (c.class === source.class) {
-      return addReferenceToOtherThingClass(source, target);
+      return addReferenceToOtherClass(source, target);
     }
     return c;
   });
@@ -51,21 +53,21 @@ const randomCrossReference = (classes: Array<ThingClass>): RandomCrossReferenceR
     className: source.class,
   };
 
-  return { thingClasses, newReference };
+  return { schemaClasses, newReference };
 };
 
 const randomCrossReferences = (
-  amount: number, classes: Array<ThingClass>,
+  amount: number, classes: Array<ThingOrActionClass>,
 ): RandomCrossReferencesResult => {
-  let thingClasses = classes;
+  let schemaClasses = classes;
   const newReferences = [];
   for (let i = 0; i < amount; i += 1) {
-    const result = randomCrossReference(thingClasses);
+    const result = randomCrossReference(schemaClasses);
     // eslint-disable-next-line prefer-destructuring
-    thingClasses = result.thingClasses;
+    schemaClasses = result.schemaClasses;
     newReferences.push(result.newReference);
   }
-  return { thingClasses, newReferences };
+  return { schemaClasses, newReferences };
 };
 
 module.exports = {

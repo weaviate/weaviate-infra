@@ -4,7 +4,7 @@
   "description": "A simple script to dynamically create a specific number of actions and things (ontology) and verticies, as well as validate that everything went right. Can be used to automatically assure that a deployed instance of weaviate works as intended.",
   "main": "index.js",
   "scripts": {
-    "build": "flow-remove-types src/ -d lib/ -i test",
+    "build": "babel src -d lib",
     "start": "node lib/index.js",
     "develop": "npm run build && npm run start",
     "flow": "flow",
@@ -14,8 +14,11 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "eslint": "^5.8.0",
+    "@babel/cli": "^7.1.5",
+    "@babel/core": "^7.1.6",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
     "babel-eslint": "^10.0.1",
+    "eslint": "^5.8.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-flowtype": "^3.2.0",
     "eslint-plugin-import": "^2.14.0",
@@ -28,6 +31,8 @@
   "dependencies": {
     "babel-jest": "^23.6.0",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
+    "deep-equal": "^1.0.1",
+    "markdown-table": "^1.1.2",
     "swagger-client": "^3.8.22",
     "uuid": "^3.3.2",
     "yargs": "^12.0.2"

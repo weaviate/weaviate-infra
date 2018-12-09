@@ -1,11 +1,14 @@
 // @flow
 
 const yargs = require('yargs');
+const log = require('./log');
 
 type Amounts = {
   thingClasses: number,
+  actionClasses: number,
   vertices: number,
   crossReferences: number,
+  checks: number,
 }
 
 type Authorization = {
@@ -17,10 +20,15 @@ type ServiceDiscovery = {
   weaviateOrigin: string,
 }
 
+type Modes = {
+  debug: boolean,
+}
+
 export type GlobalOptions = {
   amounts: Amounts,
   authorization: Authorization,
   serviceDiscovery: ServiceDiscovery,
+  modes: Modes,
 }
 
 // non-configurable options & defaults
@@ -43,19 +51,33 @@ module.exports = function parse(): GlobalOptions {
     .describe('v', 'Number of vertices (Things and Actions) to be generated')
     .alias('t', 'thing-classes')
     .describe('t', 'Number of Thing Classes in the ontology')
+    .alias('a', 'action-classes')
+    .describe('a', 'Number of Action Classes in the ontology')
     .alias('r', 'cross-references')
     .describe('r', 'Number of Classes that cross-references other classes')
     .alias('w', 'weaviate-origin')
     .describe('w', 'Origin of weaviate (e.g. http://weaviate:8080)')
-    .demandOption(['v', 't', 'r'])
+    .alias('d', 'debug')
+    .describe('d', 'Turn on debug mode. Prints results after each step.')
+    .alias('c', 'checks')
+    .describe('c', 'Number of Round-Robin checks to compare whether sent vertex matches retrieved vertex')
+    .demandOption(['v', 't', 'a', 'r', 'c'])
     .help('h')
     .alias('h', 'help');
+
+  if (argv.c > argv.v) {
+    log.red(`ERROR:\n\tDesired number of checks (${argv.c}) is larger than the number of `
+      + `desired vertices (${argv.v})`);
+    process.exit(1);
+  }
 
   return {
     amounts: {
       thingClasses: argv.t,
+      actionClasses: argv.a,
       vertices: argv.v,
       crossReferences: argv.r,
+      checks: argv.c,
     },
     authorization: {
       apiKey,
@@ -63,6 +85,9 @@ module.exports = function parse(): GlobalOptions {
     },
     serviceDiscovery: {
       weaviateOrigin: argv.w,
+    },
+    modes: {
+      debug: !!argv.d,
     },
   };
 };

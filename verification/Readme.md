@@ -3,7 +3,15 @@
 ## Roadmap / Todos
 
 * [x] get terms from contextionary (can be hardcoded at first)
-* [ ] add support for actions (should be identical to things)
+* [x] add support for actions (should be identical to things)
+  * [x] generate action classes
+  * [x] submit action classes
+  * [x] generate action vertices
+  * [x] submit action vertices
+  * [x] add-cross-refs to ontolgy
+  * [x] submit cross-refs to ontology
+  * [x] populate cross-refs (things for thing/actions for actions)
+  * [x] submit cross-refs 
 * [x] generate fixed number of things in ontology
 * [x] add random primitive property types to things ~~and actions~~ (no relations)
 * [x] generate fixed number of vertices matching the previously created ontology (no relations) 
@@ -23,12 +31,11 @@
 * [x] submit verticies to weaviate via REST API
   * [x] without cross-refs
   * [x] populate cross-refs
-* [ ] add validity checks (store created verticies in memory, query weaviate to see if
+* [x] add validity checks (store created verticies in memory, query weaviate to see if
   we get the expected results back)
 * [x] replace fixed numbers with dynamic values provided through CLI args
-* [ ] make weaviate discovery URL/origin configurable
+* [x] make weaviate discovery URL/origin configurable
 * [x] dockerize script (so no one is annoyed by the babeling required for flowtypes)
-* [ ] run on travis
 
 ## Known Limitations
 
