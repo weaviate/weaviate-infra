@@ -2,8 +2,6 @@
 
 import type { GlobalOptions } from './options';
 
-const fs = require('fs');
-
 const { randomNumbersBetween, uniqueThingAndActionNames } = require('./random');
 const { classFromName, vertexFromClass } = require('./ontology');
 const {
@@ -14,23 +12,7 @@ const parseOptions = require('./options');
 const createSwaggerClient = require('./swagger');
 const Submitter = require('./submitters');
 const log = require('./log');
-
-const contextionaryFileName = './contextionary.txt';
-
-function parseContextionary() {
-  const removeWordsWithSpecialChars = w => w.match(/^[A-Za-z]+$/);
-  const readWordsFromFile = () => fs
-    .readFileSync(contextionaryFileName, 'utf8')
-    .split('\n')
-    .map(line => line.split(' ')[0])
-    .filter(removeWordsWithSpecialChars);
-
-  log.noBreak('Reading contextionary...');
-  const words = readWordsFromFile();
-  log.green(' succesfully parsed contextionary.');
-
-  return words;
-}
+const initContextionary = require('./contextionary');
 
 class Verifier {
   options: GlobalOptions;
@@ -57,8 +39,9 @@ class Verifier {
     this.submitter = new Submitter(this.client);
   }
 
-  initContextionary() {
-    this.words = parseContextionary();
+
+  async initContextionary() {
+    this.words = await initContextionary(this.options);
   }
 
   initClassNames() {
@@ -71,7 +54,7 @@ class Verifier {
   }
 
   async init() {
-    this.initContextionary();
+    await this.initContextionary();
     await this.initSwaggerClient();
     this.initClassNames();
   }
