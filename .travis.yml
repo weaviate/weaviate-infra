@@ -6,7 +6,7 @@ services:
 - docker
 env:
   global:
-  - GOOGLE_APPLICATION_CREDENTIALS="${PWD}/semi-secret.json"
+  - GOOGLE_APPLICATION_CREDENTIALS="${PWD}/semi-weaviate-infra.json"
   - PROJECT_ID="semi-infra-test"
   - ZONE="europe-west1-b"
   - TF_VERSION="0.11.0"
@@ -14,7 +14,7 @@ cache:
   directories:
     - "$HOME/google-cloud-sdk/"
 before_install:
-- openssl aes-256-cbc -K $encrypted_92b93fb23917_key -iv $encrypted_92b93fb23917_iv -in semi-186012-d811e69bf044.json.enc -out semi-secret.json -d
+- openssl aes-256-cbc -K $encrypted_92b93fb23917_key -iv $encrypted_92b93fb23917_iv -in semi-186012-d811e69bf044.json.enc -out semi-weaviate-infra.json -d
 
 # Install GCloud SDK
 - gcloud version || true
@@ -29,23 +29,16 @@ before_install:
 - gcloud config set compute/zone $ZONE
 
 # Install Terraform
-- if ! terraform version ; then
-    mkdir -p "${HOME}/bin"
-    pushd "/tmp" ;
-    curl -sSL
-      -o terraform.zip
-      "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip" ;
-    unzip terraform.zip ;
-    mv -v terraform "${HOME}/bin/terraform" ;
-    chmod +x "${HOME}/bin/terraform" ;
-    popd ;
-    terraform version ;
-  fi
+- curl sLo /tmp/terraform.zip "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
+- unzip /tmp/terraform.zip -d /tmp
+- mkdir ~/bin
+- mv /tmp/terraform ~/bin
+- export PATH="~/bin:$PATH"
+
 install: true
 script:
-- cd terraform/
-- terraform init
-- terraform plan
-- terraform apply -auto-approve
+- terraform init ./terraform
+- terraform plan ./terraform
+- terraform apply -auto-approve ./terraform
 after_script:
 - terraform destroy -force
