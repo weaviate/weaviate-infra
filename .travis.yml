@@ -7,7 +7,7 @@ services:
 env:
   global:
   - GOOGLE_APPLICATION_CREDENTIALS="${PWD}/semi-weaviate-infra.json"
-  - PROJECT_ID="semi-infra-test"
+  - PROJECT_ID="semi-186012"
   - ZONE="europe-west1-b"
   - TF_VERSION="0.11.0"
 cache:
