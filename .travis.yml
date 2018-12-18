@@ -40,4 +40,4 @@ script:
 - terraform plan ./terraform
 - terraform apply -auto-approve ./terraform
 after_script:
-- terraform destroy -force
+- terraform destroy -force ./terraform
