@@ -40,7 +40,6 @@ before_install:
 - curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh
 - chmod 700 get_helm.sh
 - sudo ./get_helm.sh
-- helm init
 
 install: true
 script:
@@ -50,6 +49,7 @@ script:
 - terraform apply -auto-approve ./terraform
 # Prepare Cluster
 - gcloud container clusters get-credentials ${TF_VAR_cluster_name}
+- helm init
 - ./helm_setup.sh
 # Deploy Weaviate
 - helm package ./helm/weaviate
