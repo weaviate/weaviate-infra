@@ -11,7 +11,7 @@ env:
   - ZONE="europe-west1-b"
   - TF_VERSION="0.11.0"
   - TF_VAR_gke_project="semi-186012"
-  - TF_VAR_cluster_name="weaviate-${TRAVIS_BUILD_ID}_${TRAVIS_BUILD_NUMBER}"
+  - TF_VAR_cluster_name="weaviate-${TRAVIS_BUILD_ID}-${TRAVIS_BUILD_NUMBER}"
 cache:
   directories:
     - "$HOME/google-cloud-sdk/"
