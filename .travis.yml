@@ -10,6 +10,8 @@ env:
   - PROJECT_ID="semi-186012"
   - ZONE="europe-west1-b"
   - TF_VERSION="0.11.0"
+  - TF_VAR_gke_project="semi-186012"
+  - TF_VAR_cluster_name="weaviate-${TRAVIS_BUILD_ID}_${TRAVIS_BUILD_NUMBER}"
 cache:
   directories:
     - "$HOME/google-cloud-sdk/"
@@ -36,8 +38,15 @@ before_install:
 
 install: true
 script:
+# Create GKE cluster
 - terraform init ./terraform
 - terraform plan ./terraform
 - terraform apply -auto-approve ./terraform
+# Prepare Cluster
+- gcloud container clusters get-credentials weaviate
+- ./helm_setup.sh
+# Deploy Weaviate
+- helm package ./helm/weaviate
+- helm install --name weaviate ./weaviate-0.0.1.tgz
 after_script:
 - terraform destroy -force ./terraform
