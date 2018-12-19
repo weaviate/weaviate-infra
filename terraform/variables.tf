@@ -1,6 +1,6 @@
 variable "gke_project" {
 	description = "name of google project to use"
-	default = "semi-weaviate-infra"
+	default = "semi-186012"
 }
 variable "cluster_name" {
 	description = "name of kubernetes cluster"
@@ -9,7 +9,7 @@ variable "cluster_name" {
 
 variable "gke_cluster_zone" {
 	description = "in which google zone to setup the cluster"
-	default = "us-east1-b"
+	default = "europe-west1-b"
 }
 
 variable "initial_node_count" {
@@ -38,5 +38,5 @@ variable "gke_machine_type" {
 }
 
 variable "gcp_region" {
-	default = "us-east1"
+	default = "europe-west1"
 }
