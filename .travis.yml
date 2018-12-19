@@ -43,7 +43,7 @@ script:
 - terraform plan ./terraform
 - terraform apply -auto-approve ./terraform
 # Prepare Cluster
-- gcloud container clusters get-credentials weaviate
+- gcloud container clusters get-credentials ${TF_VAR_cluster_name}
 - ./helm_setup.sh
 # Deploy Weaviate
 - helm package ./helm/weaviate
