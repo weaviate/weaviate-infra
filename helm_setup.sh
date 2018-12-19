@@ -12,7 +12,7 @@ kubectl create clusterrolebinding tiller \
 
 echo "initialize helm"
 # initialized helm within the tiller service account
-helm init --service-account tiller
+helm init --service-account tiller --wait
 # updates the repos for Helm repo integration
 helm repo update
 
