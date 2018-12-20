@@ -22,8 +22,8 @@ replicasMax: 5
 initialKey: 657a48b9-e000-4d9a-b51d-69a0b621c1b9
 initialToken: 57ac8392-1ecc-4e17-9350-c9c866ac832b
 contextionary:
-  knnFile: /contextionary/example.knn
-  idxFile: /contextionary/example.idx
+  knnFile: /contextionary/contextionary.knn
+  idxFile: /contextionary/contextionary.idx
 
 # Sub Chart Overrides
 
