@@ -53,5 +53,15 @@ script:
 # Deploy Weaviate
 - helm package ./helm/weaviate
 - helm install --name weaviate ./weaviate-0.0.1.tgz
+- # Using sleep for now, once we have proper health checks on weaviate we can remove this
+- sleep 500
+# Ensure Weaviate is deployed and running
+- kubectl rollout status deployment/weaviate
+# Run test scripts
+- kubectl run --labels='app=verification' --image=creativesoftwarefdn/weaviate-verification --restart=OnFailure verification
+# Wait for script to run
+- sleep 60
+# Grap output of scripts
+- kubectl logs logs -lapp=verification
 after_script:
 - terraform destroy -force ./terraform
