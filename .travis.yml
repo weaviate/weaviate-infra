@@ -58,7 +58,7 @@ script:
 # Ensure Weaviate is deployed and running
 - kubectl rollout status deployment/weaviate
 # Run test scripts
-- kubectl run --labels='app=verification' --image=creativesoftwarefdn/weaviate-verification --restart=OnFailure verification
+- kubectl create -f verification/job.yaml
 # Wait for script to run
 - sleep 60
 # Grap output of scripts
