@@ -62,6 +62,6 @@ script:
 # Wait for script to run
 - sleep 60
 # Grap output of scripts
-- kubectl logs -lapp=verification
+- kubectl logs -lapp=verification -f
 after_script:
 - terraform destroy -force ./terraform
