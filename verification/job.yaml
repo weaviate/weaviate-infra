@@ -15,5 +15,5 @@ spec:
       containers:
       - image: creativesoftwarefdn/weaviate-verification
         name: verification
-        args: ["generate", "-t", "128", "-r", "0", "-a", "128", "-v", "1000000", "-c", "1250", "-w", "http://weaviate:80"]
+        args: ["generate", "-t", "128", "-r", "0", "-a", "128", "-v", "1000000", "-c", "1250", "--debug", "-w", "http://weaviate:80"]
       restartPolicy: OnFailure
