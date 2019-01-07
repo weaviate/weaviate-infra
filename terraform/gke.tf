@@ -32,6 +32,7 @@ resource "google_container_node_pool" "primary_pool" {
     ]
     machine_type = "${var.gke_machine_type}"
     disk_size_gb = "${var.node_disk_size}"
+    preemptible  = true
     tags = ["weaviate"]
   }
 

@@ -53,7 +53,7 @@ script:
 # Deploy Weaviate
 - helm package ./helm/weaviate
 - helm install --name weaviate ./weaviate-0.0.1.tgz
-- # Using sleep for now, once we have proper health checks on weaviate we can remove this
+ # Using sleep for now, once we have proper health checks on weaviate we can remove this
 - sleep 500
 # Ensure Weaviate is deployed and running
 - kubectl rollout status deployment/weaviate
