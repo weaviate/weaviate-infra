@@ -15,5 +15,10 @@ spec:
       containers:
       - image: creativesoftwarefdn/weaviate-verification
         name: verification
-        args: ["generate", "-t", "128", "-r", "0", "-a", "128", "-v", "10000", "-c", "1250", "-w", "http://weaviate:80"]
+        # -t = Number of Thing Classes in the ontology
+        # -r = Number of Classes that cross-references other classes
+        # -a = Number of Action Classes in the ontology
+        # -v = Number of vertices (Things and Actions) to be generated
+        # -c = checks
+        args: ["generate", "-t", "20", "-r", "0", "-a", "6", "-v", "6000000000", "-c", "12500", "-w", "http://weaviate:80"]
       restartPolicy: OnFailure

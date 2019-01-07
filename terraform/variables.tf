@@ -14,27 +14,27 @@ variable "gke_cluster_zone" {
 
 variable "initial_node_count" {
 	description = "the intial number of nodes in the cluster"
-	default = "5"
+	default = "64"
 }
 
 variable "min_nodes" {
 	description = "minimum number of nodes to have in cluster"
-	default = "2"
+	default = "24"
 }
 
 variable "max_nodes" {
 	description = "maximum number of nodes when autoscaling cluster"
-	default = "10"
+	default = "100"
 }
 
 variable "node_disk_size" {
   description = "Node disk size in GB"
-  default = "20"
+  default = "168"
 }
 
 variable "gke_machine_type" {
 	description = "google machine instance type of each node"
-	default = "n1-standard-4"
+	default = "n1-standard-8"
 }
 
 variable "gcp_region" {

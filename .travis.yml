@@ -58,10 +58,10 @@ script:
 # Ensure Weaviate is deployed and running
 - kubectl rollout status deployment/weaviate
 # Run test scripts
-- kubectl create -f verification/job.yaml
+- travis_wait 240 kubectl create -f verification/job.yaml
 # Wait for script to run
-- sleep 300
+- sleep 500
 # Grap output of scripts
-- travis_wait 20 kubectl logs -f $(kubectl get pods -lapp=verification -o jsonpath='{.items[0].metadata.name}')
+- travis_wait 240 kubectl logs -f $(kubectl get pods -lapp=verification -o jsonpath='{.items[0].metadata.name}')
 after_script:
-- terraform destroy -force ./terraform
+- travis_wait 240 terraform destroy -force ./terraform
