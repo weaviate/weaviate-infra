@@ -12,19 +12,19 @@ variable "gke_cluster_zone" {
 	default = "europe-west1-b"
 }
 
-variable "initial_node_count" {
-	description = "the intial number of nodes in the cluster"
-	default = "8"
-}
-
 variable "min_nodes" {
 	description = "minimum number of nodes to have in cluster"
-	default = "6"
+	default = "50"
+}
+
+variable "initial_node_count" {
+	description = "the intial number of nodes in the cluster"
+	default = "55"
 }
 
 variable "max_nodes" {
 	description = "maximum number of nodes when autoscaling cluster"
-	default = "9"
+	default = "60"
 }
 
 variable "node_disk_size" {
