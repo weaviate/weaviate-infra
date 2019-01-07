@@ -10,6 +10,8 @@ env:
   - PROJECT_ID="semi-186012"
   - ZONE="europe-west1-b"
   - TF_VERSION="0.11.0"
+  - TF_VAR_gke_project="semi-186012"
+  - TF_VAR_cluster_name="weaviate-${TRAVIS_BUILD_ID}-${TRAVIS_BUILD_NUMBER}"
 cache:
   directories:
     - "$HOME/google-cloud-sdk/"
@@ -34,10 +36,32 @@ before_install:
 - mv /tmp/terraform ~/bin/
 - export PATH="~/bin:$PATH"
 
+# Install Helm
+- curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh
+- chmod 700 get_helm.sh
+- sudo ./get_helm.sh
+
 install: true
 script:
+# Create GKE cluster
 - terraform init ./terraform
 - terraform plan ./terraform
 - terraform apply -auto-approve ./terraform
+# Prepare Cluster
+- gcloud container clusters get-credentials ${TF_VAR_cluster_name}
+- ./helm_setup.sh
+# Deploy Weaviate
+- helm package ./helm/weaviate
+- helm install --name weaviate ./weaviate-0.0.1.tgz
+ # Using sleep for now, once we have proper health checks on weaviate we can remove this
+- sleep 500
+# Ensure Weaviate is deployed and running
+- kubectl rollout status deployment/weaviate
+# Run test scripts
+- kubectl create -f verification/job.yaml
+# Wait for script to run
+- sleep 300
+# Grap output of scripts
+- travis_wait 20 kubectl logs -f $(kubectl get pods -lapp=verification -o jsonpath='{.items[0].metadata.name}')
 after_script:
 - terraform destroy -force ./terraform

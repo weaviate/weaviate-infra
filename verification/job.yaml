@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  creationTimestamp: null
+  labels:
+    app: verification
+  name: verification
+spec:
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: verification
+    spec:
+      containers:
+      - image: creativesoftwarefdn/weaviate-verification
+        name: verification
+        args: ["generate", "-t", "128", "-r", "0", "-a", "128", "-v", "10000", "-c", "1250", "-w", "http://weaviate:80"]
+      restartPolicy: OnFailure

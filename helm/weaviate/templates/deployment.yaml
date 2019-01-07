@@ -5,6 +5,7 @@ metadata:
   labels:
     name: weaviate
 spec:
+  progressDeadlineSeconds: 1200
   template:
     metadata:
       labels:

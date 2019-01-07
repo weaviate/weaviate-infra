@@ -32,6 +32,7 @@ resource "google_container_node_pool" "primary_pool" {
     ]
     machine_type = "${var.gke_machine_type}"
     disk_size_gb = "${var.node_disk_size}"
+    preemptible  = true
     tags = ["weaviate"]
   }
 
@@ -47,14 +48,15 @@ resource "google_container_node_pool" "primary_pool" {
 }
 
 # The following outputs allow authentication and connectivity to the GKE Cluster.
-output "client_certificate" {
-  value = "${google_container_cluster.primary.master_auth.0.client_certificate}"
-}
-
-output "client_key" {
-  value = "${google_container_cluster.primary.master_auth.0.client_key}"
-}
-
-output "cluster_ca_certificate" {
-  value = "${google_container_cluster.primary.master_auth.0.cluster_ca_certificate}"
-}
+# Useful for debugging, can be removed
+# output "client_certificate" {
+#   value = "${google_container_cluster.primary.master_auth.0.client_certificate}"
+# }
+# 
+# output "client_key" {
+#   value = "${google_container_cluster.primary.master_auth.0.client_key}"
+# }
+# 
+# output "cluster_ca_certificate" {
+#   value = "${google_container_cluster.primary.master_auth.0.cluster_ca_certificate}"
+# }
