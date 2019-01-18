@@ -3,15 +3,19 @@
 import type { GlobalOptions } from './options';
 
 const fetch = require('node-fetch');
+const fs = require('fs');
 const log = require('./log');
 
-const checkForStatus = (desiredStatusCode: number) => (res: Response): Promise<Response> => {
+const checkForStatus = (desiredStatusCode: number) => (
+  res: Response,
+): Promise<Response> => {
   if (res.status === desiredStatusCode) {
     return Promise.resolve(res);
   }
 
-  return Promise.reject(new Error(`wanted status code ${desiredStatusCode}, `
-  + `but got ${res.status}`));
+  return Promise.reject(
+    new Error(`wanted status code ${desiredStatusCode}, but got ${res.status}`),
+  );
 };
 
 function parseContextionary(textBlob: string): Array<string> {
@@ -29,7 +33,9 @@ function parseContextionary(textBlob: string): Array<string> {
 }
 
 function getLatestContextionaryVersion() {
-  return fetch('https://contextionary.creativesoftwarefdn.org/contextionary.json')
+  return fetch(
+    'https://contextionary.creativesoftwarefdn.org/contextionary.json',
+  )
     .then(res => res.json())
     .then(body => body.latestVersion);
 }
@@ -39,8 +45,10 @@ function contextionaryURL(version: string): string {
 }
 
 function handleContextionaryDownloadError(e: Error) {
-  log.red('\n\nERROR:\n\tCould not download contextionary. If you specified a version other than'
-      + ` "latest", then most likely the version does not exist: ${e.message}`);
+  log.red(
+    '\n\nERROR:\n\tCould not download contextionary. If you specified a version other than'
+      + ` "latest", then most likely the version does not exist: ${e.message}`,
+  );
   process.exit(1);
 }
 
@@ -51,14 +59,23 @@ function downloadContextionary(url: string): string {
     .catch(handleContextionaryDownloadError);
 }
 
-async function initContextionary(options: GlobalOptions): Promise<Array<string>> {
+async function initContextionary(
+  options: GlobalOptions,
+): Promise<Array<string>> {
+  if (options.serviceDiscovery.contextionaryVersion === 'minimal') {
+    // don't download at all, but rather use the minimal one we have onboard
+    return parseContextionary(fs.readFileSync('./minimal-contextionary.txt', 'utf-8'));
+  }
+
   let version;
   if (options.serviceDiscovery.contextionaryVersion === 'latest') {
     version = await getLatestContextionaryVersion();
   } else {
     version = options.serviceDiscovery.contextionaryVersion;
-    log.normal(`Not using 'latest' as the contextionary version, as ${version} was`
-      + ' explicitly desired');
+    log.normal(
+      `Not using 'latest' as the contextionary version, as ${version} was`
+        + ' explicitly desired',
+    );
   }
 
   const downloadURL = contextionaryURL(version);

@@ -41,9 +41,7 @@ const populateCrossReferencesOnVertices = (vertices, classToPopulate, thingOrAct
     return {
       ...acc,
       [cur.name]: {
-        $cref: target.uuid,
-        type: thingOrAction,
-        locationUrl: options.serviceDiscovery.weaviateOrigin,
+        $cref: `weaviate://localhost/${thingOrAction.toLowerCase()}s/${target.uuid}`,
       },
     };
   }, {});
