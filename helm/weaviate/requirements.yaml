@@ -1,7 +1,8 @@
 dependencies:
   - name: janusgraph
-    version: 0.2.0
-    repository: "@stable"
+    version: 0.2.1
+    # repository: "@stable"
+    repository: file://../charts/janusgraph
     alias: janusgraph
 
   - name: elasticsearch
