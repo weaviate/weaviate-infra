@@ -47,10 +47,13 @@ cassandra:
 #Elasticsearch
 elasticsearch:
   deploy-so: true
-  master.replicas: 2
-  client.replicas: 2
-  cluster.env: 
-    MINIMUM_MASTER_NODES: "2"
+  master:
+    replicas: 2
+  client:
+    replicas: 2
+  cluster:
+    env: 
+      MINIMUM_MASTER_NODES: "2"
 
 #Janus
 janusgraph:
