@@ -18,6 +18,10 @@ data:
             "state_dir": "."
           }
         },
+        "configuration_storage": {
+          "type": "etcd",
+          "url": "http://{{ index .Values "etcd-operator" "etcdCluster" "name" }}:2379"
+        },
         "contextionary": {
           "knn_file" : "{{ .Values.contextionary.knnFile }}",
           "idx_file" : "{{ .Values.contextionary.idxFile }}"
