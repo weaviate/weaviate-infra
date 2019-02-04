@@ -33,8 +33,8 @@ cassandra:
   image:
     tag: 3
   config:
-    cluster_size: 2
-    seed_size: 2
+    cluster_size: 20
+    seed_size: 5
     start_rpc: true
   resources:
     requests:
@@ -81,3 +81,11 @@ janusgraph:
     index.search.hostname: weaviate-elasticsearch-client
     storage.index.search.local-mode: false
     storage.index.search.client-only: false
+
+# Etcd Operator
+etcd-operator:
+  customResources:
+    createEtcdClusterCRD: true
+  etcdCluster:
+    name: etcd-cluster
+    size: 3

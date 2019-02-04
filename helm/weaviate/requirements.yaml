@@ -15,3 +15,9 @@ dependencies:
     repository: "@incubator"
     alias: cassandra
     condition: cassandra.deploy
+
+  - name: etcd-operator
+    version: 0.8.3
+    repository: "@stable"
+    alias: etcd-operator
+    condition: etcd-operator.deploy
