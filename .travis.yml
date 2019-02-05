@@ -59,8 +59,6 @@ script:
 - kubectl rollout status deployment/weaviate
 # Run test scripts
 - travis_wait 480 kubectl create -f verification/job.yaml
-# Wait for script to run
-- sleep 500
 # Grap output of scripts
 - travis_wait 480 kubectl logs -f $(kubectl get pods -lapp=verification -o jsonpath='{.items[0].metadata.name}')
 after_script:
