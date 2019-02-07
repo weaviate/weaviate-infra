@@ -53,15 +53,20 @@ script:
 # Deploy Weaviate
 - helm package ./helm/weaviate
 - helm install --name weaviate ./weaviate-0.0.1.tgz
+- sleep 5
+# Etcd cluster needs to be created after initial install
+-  helm upgrade weaviate --set etcdCluster.create=true ./weaviate-0.0.1.tgz
  # Using sleep for now, once we have proper health checks on weaviate we can remove this
 - sleep 500
 # Ensure Weaviate is deployed and running
 - kubectl rollout status deployment/weaviate
 # Run test scripts
-- travis_wait 480 kubectl create -f verification/job.yaml
-# Wait for script to run
-- sleep 500
+- kubectl create -f verification/job.yaml
 # Grap output of scripts
-- travis_wait 480 kubectl logs -f $(kubectl get pods -lapp=verification -o jsonpath='{.items[0].metadata.name}')
+- travis_wait 30 kubectl logs -f $(kubectl get pods -lapp=verification -o jsonpath='{.items[0].metadata.name}')
 after_script:
-- travis_wait 480 terraform destroy -force ./terraform
+- terraform destroy -force ./terraform
+
+# branches:
+#   only:
+#   - master

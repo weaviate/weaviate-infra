@@ -25,6 +25,13 @@ contextionary:
   knnFile: /contextionary/contextionary.knn
   idxFile: /contextionary/contextionary.idx
 
+# Etcd Cluster
+etcdCluster:
+  create: false
+  name: weaviate-etcd
+  size: 3
+  version: 3.2.25
+
 # Sub Chart Overrides
 
 #Cassandra
@@ -71,6 +78,8 @@ janusgraph:
     limits:
       memory: 2Gi
       cpu: 1
+  persistence:
+    enabled: false
   properties:
     storage.backend: cassandra
     storage.directory: /db/cassandra
@@ -81,11 +90,3 @@ janusgraph:
     index.search.hostname: weaviate-elasticsearch-client
     storage.index.search.local-mode: false
     storage.index.search.client-only: false
-
-# Etcd Operator
-etcd-operator:
-  customResources:
-    createEtcdClusterCRD: true
-  etcdCluster:
-    name: etcd-cluster
-    size: 3
