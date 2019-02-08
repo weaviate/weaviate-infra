@@ -20,7 +20,7 @@ data:
         },
         "configuration_storage": {
           "type": "etcd",
-          "url": "http://{{ index .Values "etcd-operator" "etcdCluster" "name" }}:2379"
+          "url": "http://weaviate-etcd:2379"
         },
         "contextionary": {
           "knn_file" : "{{ .Values.contextionary.knnFile }}",
@@ -29,11 +29,6 @@ data:
         "schemas": {
           "Thing": "/schema/things_schema.json",
           "Action": "/schema/actions_schema.json"
-        },
-        "network": {
-          "genesis_url": "http://genesis_fake:8090",
-          "public_url": "http://localhost:8080",
-          "peer_name": "bestWeaviate"
         },
         "limit": 100,
         "debug": true,
