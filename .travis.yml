@@ -63,9 +63,11 @@ script:
 # Run test scripts
 - kubectl create -f verification/job.yaml
 # Wait for verification job to start
-- kubectl wait --for=condition=complete job/verification --timeout=20m
+# kubectl wait not available on the version running in travis :(
+- sleep 60
+# - kubectl wait --for=condition=complete job/verification --timeout=20m
 # Grap output of scripts
-- kubectl logs -f $(kubectl get pods -lapp=verification -o jsonpath='{.items[0].metadata.name}')
+- travis_wait kubectl logs -f $(kubectl get pods -lapp=verification -o jsonpath='{.items[0].metadata.name}')
 after_script:
 - terraform destroy -force ./terraform
 
