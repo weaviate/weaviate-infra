@@ -14,17 +14,17 @@ variable "gke_cluster_zone" {
 
 variable "min_nodes" {
 	description = "minimum number of nodes to have in cluster"
-	default = "1"
+	default = "2"
 }
 
 variable "initial_node_count" {
 	description = "the intial number of nodes in the cluster"
-	default = "2"
+	default = "5"
 }
 
 variable "max_nodes" {
 	description = "maximum number of nodes when autoscaling cluster"
-	default = "2"
+	default = "10"
 }
 
 variable "node_disk_size" {
