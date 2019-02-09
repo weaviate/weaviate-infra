@@ -18,6 +18,10 @@ data:
             "state_dir": "."
           }
         },
+        "configuration_storage": {
+          "type": "etcd",
+          "url": "http://weaviate-etcd:2379"
+        },
         "contextionary": {
           "knn_file" : "{{ .Values.contextionary.knnFile }}",
           "idx_file" : "{{ .Values.contextionary.idxFile }}"
