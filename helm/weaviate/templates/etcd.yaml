@@ -1,0 +1,20 @@
+{{- if .Values.etcdCluster.create }}
+---
+apiVersion: "etcd.database.coreos.com/v1beta2"
+kind: "EtcdCluster"
+metadata:
+  name: {{ .Values.etcdCluster.name }}
+  labels:
+    app: weaviate-etcd
+spec:
+  size: {{ .Values.etcdCluster.size }}
+  version: "{{ .Values.etcdCluster.version }}"
+  pod:
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+{{- end }}
