@@ -53,16 +53,13 @@ script:
 # Deploy Weaviate
 - helm package ./helm/weaviate
 - helm install --name weaviate ./weaviate-0.0.1.tgz
-- sleep 20
+- sleep 30
 # Etcd cluster needs to be created after initial install
 - helm upgrade weaviate --set etcdCluster.create=true ./weaviate-0.0.1.tgz
  # Using sleep for now, once we have proper health checks on weaviate we can remove this
 - sleep 500
 # Ensure Weaviate is deployed and running
 - kubectl rollout status deployment/weaviate
-# Some debugging
-- kubectl get pods
-- kubectl logs $(kubectl get pods -lapp=weaviate -o jsonpath='{.items[0].metadata.name}')
 # Run test scripts
 - kubectl create -f verification/job.yaml
 # Wait for verification job to start
