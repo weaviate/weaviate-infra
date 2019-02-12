@@ -36,7 +36,7 @@ etcdCluster:
 
 #Cassandra
 cassandra:
-  deploy: true
+  deploy: false
   image:
     tag: 3
   config:
@@ -81,9 +81,12 @@ janusgraph:
   persistence:
     enabled: false
   properties:
-    storage.backend: cassandra
-    storage.directory: /db/cassandra
-    storage.hostname: weaviate-cassandra
+    storage.backend: hbase
+    storage.directory: null
+    storage.hbase.ext.hbase.client.connection.impl: com.google.cloud.bigtable.hbase1_x.BigtableConnection
+    # TODO Pull these two values from terraform output
+    storage.hbase.ext.google.bigtable.project.id: semi-186012
+    storage.hbase.ext.google.bigtable.instance.id: weaviate-instance
     gremlin.graph: org.janusgraph.core.JanusGraphFactory
     index.search.elasticsearch.interface: REST_CLIENT
     index.search.backend: elasticsearch

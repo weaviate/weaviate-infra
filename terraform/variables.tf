@@ -19,7 +19,7 @@ variable "min_nodes" {
 
 variable "initial_node_count" {
 	description = "the intial number of nodes in the cluster"
-	default = "5"
+	default = "3"
 }
 
 variable "max_nodes" {
@@ -39,4 +39,8 @@ variable "gke_machine_type" {
 
 variable "gcp_region" {
 	default = "europe-west1"
+}
+
+variable "enable_big_table" {
+	default = "true"
 }
