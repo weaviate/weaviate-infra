@@ -12,9 +12,9 @@ spec:
   pod:
     resources:
       limits:
-        cpu: 100m
-        memory: 128Mi
+        cpu: "{{ .Values.etcdCluster.pod.resources.limits.cpu }}"
+        memory: "{{ .Values.etcdCluster.pod.resources.limits.memory }}"
       requests:
-        cpu: 100m
-        memory: 128Mi
+        cpu: "{{ .Values.etcdCluster.pod.resources.requests.cpu }}"
+        memory: "{{ .Values.etcdCluster.pod.resources.requests.memory }}"
 {{- end }}

@@ -13,10 +13,11 @@ image:
 importer: false
 
 autoscaling:
-  enabled: false
-cpuTargetPercentage: 70
-replicas: 1
-replicasMax: 5 
+  enabled: true
+  cpuTargetPercentage: 70
+  replicas: 0
+  replicasMax: 50
+  replicasMin: 1
 
 # Weaviate Config
 initialKey: 657a48b9-e000-4d9a-b51d-69a0b621c1b9
@@ -25,39 +26,56 @@ contextionary:
   knnFile: /contextionary/contextionary.knn
   idxFile: /contextionary/contextionary.idx
 
+etcdOperator:
+  deploy: false
+
 # Etcd Cluster
 etcdCluster:
-  create: false
+  create: true
   name: weaviate-etcd
-  size: 3
+  size: 5
   version: 3.2.25
+  pod:
+    resources:
+      requests:
+        memory: 256Mi
+        cpu: 0.25
+      limits:
+        memory: 1Gi
+        cpu: 1
 
 # Sub Chart Overrides
 
 #Cassandra
 cassandra:
+  livenessProbe:
+    initialDelaySeconds: 60
+  readinessProbe:
+    initialDelaySeconds: 60
   deploy: true
   image:
     tag: 3
   config:
-    cluster_size: 2
+    cluster_size: 3
     seed_size: 2
     start_rpc: true
   resources:
     requests:
-      memory: 4Gi
-      cpu: 2
+      memory: 2Gi
+      cpu: 1
     limits:
-      memory: 4Gi
-      cpu: 2
+      memory: 8Gi
+      cpu: 4
 
 #Elasticsearch
 elasticsearch:
   deploy-so: true
   master:
-    replicas: 2
+    replicas: 5
   client:
-    replicas: 2
+    replicas: 5
+  data:
+    replicas: 5
   cluster:
     env: 
       MINIMUM_MASTER_NODES: "2"
@@ -66,27 +84,29 @@ elasticsearch:
 janusgraph:
   image:
     repository: creativesoftwarefdn/janusgraph-docker
-    tag: 0.2.0
+    tag: 0.2.2
   elasticsearch.deploy:
     deploy: false
   configMapOverrideName: janusgraph-config
-  replicaCount: 1
+  replicaCount: 5
   resources:
     requests:
-      memory: 2Gi
-      cpu: 1
+      memory: 1Gi
+      cpu: 0.5
     limits:
-      memory: 2Gi
-      cpu: 1
+      memory: 8Gi
+      cpu: 4
   persistence:
     enabled: false
   properties:
     storage.backend: cassandra
     storage.directory: /db/cassandra
     storage.hostname: weaviate-cassandra
+    storage.batch-loading: true
     gremlin.graph: org.janusgraph.core.JanusGraphFactory
     index.search.elasticsearch.interface: REST_CLIENT
     index.search.backend: elasticsearch
     index.search.hostname: weaviate-elasticsearch-client
     storage.index.search.local-mode: false
     storage.index.search.client-only: false
+    query.force-index: true
