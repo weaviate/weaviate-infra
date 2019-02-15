@@ -65,6 +65,9 @@ script:
 # Wait for verification job to start
 # kubectl wait not available on the version running in travis :(
 - sleep 60
+# Adding some debug
+- kubectl get pods
+- kubectl logs $(kubectl get pods -lapp=weaviate -o jsonpath='{.items[0].metadata.name}')
 # - kubectl wait --for=condition=complete job/verification --timeout=20m
 # Grap output of scripts
 - travis_wait 20 kubectl logs -f $(kubectl get pods -lapp=verification -o jsonpath='{.items[0].metadata.name}')
