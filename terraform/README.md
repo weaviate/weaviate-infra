@@ -21,6 +21,12 @@
 
 (Alternatively this can be done with gcloud cli: https://cloud.google.com/community/tutorials/managing-gcp-projects-with-terraform)
 
+## Choosing back end
+
+Cassandra or BigTable
+
+BigTable is deployed along with the GKE cluster. This can be controlled via the `enable_big_table` variable. Either modify directly via ./variables.tf or by setting an env var `TR_VAR_enable_big_table`
+
 ## Create cluster
 
 ```
