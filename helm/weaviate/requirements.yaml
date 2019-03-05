@@ -17,7 +17,7 @@ dependencies:
     condition: cassandra.deploy
 
   - name: etcd
-    version: 1.5.6
+    version: 2.0.0
     repository: "https://charts.bitnami.com/bitnami"
     alias: etcd
     condition: etcd.deploy
