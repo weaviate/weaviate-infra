@@ -5,6 +5,7 @@ metadata:
   labels:
     name: weaviate
 spec:
+  replicas: {{ .Values.autoscaling.replicas }}
   progressDeadlineSeconds: 1200
   template:
     metadata:

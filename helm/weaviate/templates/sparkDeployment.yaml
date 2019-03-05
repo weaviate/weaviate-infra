@@ -1,0 +1,71 @@
+## Master
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: "{{ .Release.Name }}-spark-master"
+  labels:
+    name: spark-master
+spec:
+  progressDeadlineSeconds: 1200
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: spark-master
+    spec:
+      containers:
+      - name:  "{{ .Release.Name }}-spark-master"
+        image: eu.gcr.io/semi-186012/sparkmaster:latest
+        ports:
+        - containerPort: 7077
+        resources:
+          requests:
+            cpu: {{ .Values.spark.master.resources.requests.cpu }}
+            memory: {{ .Values.spark.master.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.spark.master.resources.limits.cpu }}
+            memory: {{ .Values.spark.master.resources.limits.memory }}
+---
+## Service so the users and workers can discover the master
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Release.Name }}-spark-master"
+spec:
+  type: ClusterIP
+  selector:
+    app: spark-master
+  ports:
+    - protocol: TCP
+      port: 7077
+      targetPort: 7077
+---
+## Workers
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: "{{ .Release.Name }}-spark-worker"
+  labels:
+    name: weaviate
+spec:
+  progressDeadlineSeconds: 1200
+  replicas: {{ .Values.spark.worker.replicas }}
+  template:
+    metadata:
+      labels:
+        app: spark-worker
+    spec:
+      containers:
+      - name:  "{{ .Release.Name }}-spark-worker"
+        image: eu.gcr.io/semi-186012/sparkworker:latest
+        resources:
+          requests:
+            cpu: {{ .Values.spark.worker.resources.requests.cpu }}
+            memory: {{ .Values.spark.worker.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.spark.worker.resources.limits.cpu }}
+            memory: {{ .Values.spark.worker.resources.limits.memory }}
+        env:
+          - name: SPARK_MASTER
+            value: "spark://{{ .Release.Name }}-spark-master:7077"
+

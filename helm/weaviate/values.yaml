@@ -15,7 +15,7 @@ importer: false
 autoscaling:
   enabled: true
   cpuTargetPercentage: 70
-  replicas: 0
+  replicas: 8
   replicasMax: 50
   replicasMin: 1
 
@@ -33,21 +33,23 @@ etcdOperator:
 etcdCluster:
   create: true
   name: weaviate-etcd
-  size: 5
+  size: 6
   version: 3.2.25
   pod:
     resources:
       requests:
-        memory: 256Mi
-        cpu: 0.25
+        memory: 8Gi
+        cpu: 2
       limits:
-        memory: 1Gi
-        cpu: 1
+        memory: 16Gi
+        cpu: 4
 
 # Sub Chart Overrides
 
 #Cassandra
 cassandra:
+  persistence:
+    size: 200Gi
   livenessProbe:
     initialDelaySeconds: 60
   readinessProbe:
@@ -56,26 +58,36 @@ cassandra:
   image:
     tag: 3
   config:
-    cluster_size: 3
+    cluster_size: 18
     seed_size: 2
     start_rpc: true
+    max_heap_size: 8096M
+    heap_new_size: 2048M
   resources:
     requests:
-      memory: 2Gi
-      cpu: 1
-    limits:
-      memory: 8Gi
+      memory: 12Gi
       cpu: 4
+    limits:
+      memory: 16Gi
+      cpu: 8
 
 #Elasticsearch
 elasticsearch:
   deploy-so: true
   master:
-    replicas: 5
+    replicas: 3
   client:
-    replicas: 5
+    replicas: 3
   data:
-    replicas: 5
+    replicas: 15
+    heapSize: 4096M
+    resources: 
+      requests:
+        cpu: 1
+        memory: 4Gi
+      limits:
+        cpu: 4
+        memory: 8Gi
   cluster:
     env: 
       MINIMUM_MASTER_NODES: "2"
@@ -85,13 +97,11 @@ janusgraph:
   image:
     repository: creativesoftwarefdn/janusgraph-docker
     tag: 0.2.2
-  elasticsearch.deploy:
-    deploy: false
   configMapOverrideName: janusgraph-config
-  replicaCount: 5
+  replicaCount: 3
   resources:
     requests:
-      memory: 1Gi
+      memory: 4Gi
       cpu: 0.5
     limits:
       memory: 8Gi
@@ -103,10 +113,33 @@ janusgraph:
     storage.directory: /db/cassandra
     storage.hostname: weaviate-cassandra
     storage.batch-loading: true
+    storage.cassandra.replication-factor: 3
+    storage.cassandra.write-consistency-level: ONE
     gremlin.graph: org.janusgraph.core.JanusGraphFactory
     index.search.elasticsearch.interface: REST_CLIENT
     index.search.backend: elasticsearch
     index.search.hostname: weaviate-elasticsearch-client
     storage.index.search.local-mode: false
     storage.index.search.client-only: false
+    storage.buffer-size: 4096
     query.force-index: true
+
+#Spark
+spark:
+  master:
+    resources:
+      requests:
+        memory: 1.5Gi
+        cpu: 0.5
+      limits:
+        memory: 2Gi
+        cpu: 2
+  worker:
+    replicas: 1
+    resources:
+      requests:
+        memory: 1.5Gi
+        cpu: 0.5
+      limits:
+        memory: 2Gi
+        cpu: 2

@@ -4,10 +4,32 @@ kind: ConfigMap
 metadata:
   name: janusgraph-config
 data:
+  spark-cassandra.properties: |-
+    {{- $eshostname := (index .Values.janusgraph.properties "index.search.hostname") | default (printf "%s-elasticsearch-client" .Release.Name | trunc 63 | trimSuffix "-")}}
+    gremlin.graph=org.apache.tinkerpop.gremlin.hadoop.structure.HadoopGraph
+    gremlin.hadoop.graphReader=org.janusgraph.hadoop.formats.cassandra.Cassandra3InputFormat
+    gremlin.hadoop.graphWriter=org.apache.tinkerpop.gremlin.hadoop.structure.io.gryo.GryoOutputFormat
+    gremlin.hadoop.jarsInDistributedCache=true
+    gremlin.hadoop.inputLocation=none
+    gremlin.hadoop.outputLocation=output
+    gremlin.spark.persistContext=true
+    janusgraphmr.ioformat.conf.storage.backend=cassandra
+    janusgraphmr.ioformat.conf.storage.hostname={{ printf "%s-cassandra" .Release.Name | trunc 63 | trimSuffix "-"}}
+    janusgraphmr.ioformat.conf.storage.port=9160
+    janusgraphmr.ioformat.conf.storage.cassandra.keyspace=janusgraph
+    janusgraphmr.ioformat.conf.index.search.backend=elasticsearch
+    janusgraphmr.ioformat.conf.index.search.hostname={{ $eshostname }}
+    cassandra.input.partitioner.class=org.apache.cassandra.dht.Murmur3Partitioner
+    spark.master=spark://{{ printf "%s-spark-master" .Release.Name | trunc 63 | trimSuffix "-"}}:7077
+    spark.executor.memory=1g
+    spark.executor.extraClassPath=/opt/lib/janusgraph/*
+    spark.serializer=org.apache.spark.serializer.KryoSerializer
+    spark.kryo.registrator=org.apache.tinkerpop.gremlin.spark.structure.io.gryo.GryoRegistrator
+
   janusgraph.properties: |-
     gremlin.graph=org.janusgraph.core.JanusGraphFactory
+    ids.block-size=10000000
 
-    {{- $eshostname := (index .Values.janusgraph.properties "index.search.hostname") | default (printf "%s-elasticsearch-client" .Release.Name | trunc 63 | trimSuffix "-")}}
     {{- range $key, $val := .Values.janusgraph.properties }}
     {{- if ne $key "index.search.hostname" }}
     {{ $key }}={{ $val }}
@@ -20,7 +42,7 @@ data:
   gremlin-server.yaml: |-
     host: 0.0.0.0
     port: 8182
-    threadPoolWorker: 1
+    threadPoolWorker: 8
     gremlinPool: 8
     scriptEvaluationTimeout: 30000
     serializedResponseTimeout: 30000
