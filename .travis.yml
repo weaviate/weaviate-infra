@@ -58,6 +58,7 @@ script:
 - terraform apply -auto-approve ./terraform
 # Prepare Cluster
 - gcloud container clusters get-credentials ${TF_VAR_cluster_name}
+- kubectl version
 - ./helm_setup.sh
 # Deploy Weaviate
 - helm package ./helm/weaviate
@@ -68,13 +69,14 @@ script:
  # Using sleep for now, once we have proper health checks on weaviate we can remove this
 - sleep 500
 # Ensure Weaviate is deployed and running
+# This command can timeout - should not fail the build for this
+- set +e
 - kubectl rollout status deployment/weaviate
+- set -e
 # Run test scripts
 - kubectl create -f verification/job.yaml
 # Wait for verification job to start
-# kubectl wait not available on the version running in travis :(
-- sleep 60
-# - kubectl wait --for=condition=complete job/verification --timeout=20m
+- kubectl wait --for=condition=complete job/verification --timeout=20m
 # Grap output of scripts
 - travis_wait 20 kubectl logs -f $(kubectl get pods -lapp=verification -o jsonpath='{.items[0].metadata.name}')
 after_script:
