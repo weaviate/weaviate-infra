@@ -18,6 +18,13 @@ cache:
 before_install:
 - openssl aes-256-cbc -K $encrypted_92b93fb23917_key -iv $encrypted_92b93fb23917_iv -in semi-186012-d811e69bf044.json.enc -out semi-weaviate-infra.json -d
 
+# Install kubectl manually because we need v1.12
+- sudo apt-get update && sudo apt-get install -y apt-transport-https
+- curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+- echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+- sudo apt-get update
+- sudo apt-get install -y kubectl
+
 # Install GCloud SDK
 - gcloud version || true
 - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
@@ -25,7 +32,7 @@ before_install:
 - source /home/travis/google-cloud-sdk/path.bash.inc
 - gcloud version
 
-- gcloud components update kubectl --quiet
+# - gcloud components update kubectl --quiet
 - gcloud auth activate-service-account --key-file "${GOOGLE_APPLICATION_CREDENTIALS}"
 - gcloud config set project $PROJECT_ID
 - gcloud config set compute/zone $ZONE
