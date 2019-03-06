@@ -20,5 +20,5 @@ spec:
         # -a = Number of Action Classes in the ontology
         # -v = Number of vertices (Things and Actions) to be generated
         # -c = checks
-        args: ["generate", "-t", "128", "-r", "128", "-a", "128", "-v", "1280", "-c", "640", "-w", "http://weaviate:80"]
+        args: ["generate", "-t", "32", "-r", "32", "-a", "32", "-v", "320", "-c", "160", "-w", "http://weaviate:80"]
       restartPolicy: OnFailure
