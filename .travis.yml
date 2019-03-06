@@ -1,9 +1,4 @@
 sudo: required
-language: java
-jdk:
-- oraclejdk8
-services:
-- docker
 env:
   global:
   - GOOGLE_APPLICATION_CREDENTIALS="${PWD}/semi-weaviate-infra.json"
