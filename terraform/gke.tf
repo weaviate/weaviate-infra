@@ -9,6 +9,7 @@ resource "google_container_cluster" "primary" {
   description        = "Kubernetes Cluster on GKE for Weaviate platform."
   zone               = "${var.gke_cluster_zone}"
   project			       = "${var.gke_project}"
+  min_master_version = "1.12"
 
   remove_default_node_pool = true
   node_pool {

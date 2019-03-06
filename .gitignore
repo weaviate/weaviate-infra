@@ -7,3 +7,5 @@
 # .tfstate files
 *.tfstate
 *.tfstate.*
+
+*.lock

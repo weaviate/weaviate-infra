@@ -43,6 +43,8 @@ before_install:
 
 install: true
 script:
+# Fail on error
+- set -e
 # Create GKE cluster
 - terraform init ./terraform
 - terraform plan ./terraform

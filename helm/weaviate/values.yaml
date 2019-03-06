@@ -25,13 +25,6 @@ contextionary:
   knnFile: /contextionary/contextionary.knn
   idxFile: /contextionary/contextionary.idx
 
-# Etcd Cluster
-etcdCluster:
-  create: false
-  name: weaviate-etcd
-  size: 3
-  version: 3.2.25
-
 # Sub Chart Overrides
 
 #Cassandra
@@ -90,3 +83,28 @@ janusgraph:
     index.search.hostname: weaviate-elasticsearch-client
     storage.index.search.local-mode: false
     storage.index.search.client-only: false
+
+#Etcd
+etcd:
+  statefulset:
+    replicaCount: 3
+  ##
+  auth:
+    client:
+      ## Switch to encrypt client communication using TLS certificates
+      secureTransport: false
+      ## Switch to automatically create the TLS certificates
+      useAutoTLS: false
+      enableAuthentication: false
+    peer:
+      ## Switch to encrypt client communication using TLS certificates
+      secureTransport: true
+      ## Switch to automatically create the TLS certificates
+      useAutoTLS: true
+      ## Switch to enable host authentication using TLS certificates. Requires existing secret.
+      enableAuthentication: false
+  metrics:
+    enabled: true
+    podAnnotations:
+      prometheus.io/scrape: "true"
+    prometheus.io/port: "2379"

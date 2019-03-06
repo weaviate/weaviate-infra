@@ -1,6 +1,6 @@
 variable "gke_project" {
 	description = "name of google project to use"
-	default = "semi-186012"
+	default = "semi-weaviate-infra"
 }
 variable "cluster_name" {
 	description = "name of kubernetes cluster"
