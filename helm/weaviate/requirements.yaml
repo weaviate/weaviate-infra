@@ -21,3 +21,8 @@ dependencies:
     repository: "https://charts.bitnami.com/bitnami"
     alias: etcd
     condition: etcd.deploy
+
+  - name: spark
+    version: 0.2.1
+    repository: "@stable"
+    condition: spark.deploy
