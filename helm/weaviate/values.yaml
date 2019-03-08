@@ -118,6 +118,8 @@ spark:
   Master:
     Image: "creativesoftwarefdn/spark-janusgraph-master"
     ImageTag: "1.6.3-janus-0.2.2"
+    Replicas: 1
   Worker:
     Image: "creativesoftwarefdn/spark-janusgraph-worker"
     ImageTag: "1.6.3-janus-0.2.2"
+    Replicas: 3
