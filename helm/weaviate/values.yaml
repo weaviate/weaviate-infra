@@ -86,6 +86,7 @@ janusgraph:
 
 #Etcd
 etcd:
+  envVarsConfigMap: "etcd-config"
   statefulset:
     replicaCount: 3
   ##
