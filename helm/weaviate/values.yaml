@@ -104,3 +104,22 @@ etcd:
       useAutoTLS: true
       ## Switch to enable host authentication using TLS certificates. Requires existing secret.
       enableAuthentication: false
+  metrics:
+    enabled: true
+    podAnnotations:
+      prometheus.io/scrape: "true"
+    prometheus.io/port: "2379"
+
+# Spark
+spark:
+  deploy: true
+  Spark:
+    Path: "/spark"
+  Master:
+    Image: "creativesoftwarefdn/spark-janusgraph-master"
+    ImageTag: "1.6.3-janus-0.2.2"
+    Replicas: 1
+  Worker:
+    Image: "creativesoftwarefdn/spark-janusgraph-worker"
+    ImageTag: "1.6.3-janus-0.2.2"
+    Replicas: 3
