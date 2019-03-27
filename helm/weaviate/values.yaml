@@ -8,7 +8,7 @@ image:
   # registry where weaviate image is stored
   registry: docker.io/
   # tag of image to deploy
-  tag: unstable
+  tag: latest
 
 importer: false
 
@@ -59,7 +59,7 @@ elasticsearch:
 janusgraph:
   image:
     repository: creativesoftwarefdn/janusgraph-docker
-    tag: 0.2.0
+    tag: 0.3.1
   elasticsearch.deploy:
     deploy: false
   configMapOverrideName: janusgraph-config
