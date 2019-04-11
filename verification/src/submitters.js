@@ -10,7 +10,7 @@ type Status = {
   description: string,
   succeeded: number,
   failed: number,
-}
+};
 
 function referenceToPatchDoc(reference, thingOrAction) {
   return {
@@ -32,7 +32,7 @@ function formatElapsed(elapsed: Hrtime): string {
 class Submitter {
   client: any;
 
-  comparer: Comparer
+  comparer: Comparer;
 
   status: Array<Status>;
 
@@ -51,7 +51,7 @@ class Submitter {
 
   addMonitoring = (entry: Monitoring) => {
     this.monitoring.push(entry);
-  }
+  };
 
   printStatus() {
     log.bold('------------------------------------');
@@ -68,7 +68,11 @@ class Submitter {
       log.boldNoBreak('Failed: ');
       log.red(`${task.failed}`);
       log.boldNoBreak('Success Rate: ');
-      log.normal(`${Math.floor(task.succeeded / (task.failed + task.succeeded) * 100)} %`);
+      log.normal(
+        `${Math.floor(
+          (task.succeeded / (task.failed + task.succeeded)) * 100,
+        )} %`,
+      );
     });
   }
 
@@ -81,7 +85,11 @@ class Submitter {
     let failed = 0;
 
     const handleSuccess = (schemaClass, start) => (res) => {
-      log.green(`Successfully submitted ${thingOrAction} class ${schemaClass.class} to weaviate (Status ${res.status})`);
+      log.green(
+        `Successfully submitted ${thingOrAction} class ${
+          schemaClass.class
+        } to weaviate (Status ${res.status})`,
+      );
       succeeded += 1;
       this.addMonitoring({
         verb: 'create',
@@ -92,7 +100,13 @@ class Submitter {
     };
 
     const handleError = (schemaClass, start) => (err) => {
-      log.red(`Could not submit ${thingOrAction} class ${schemaClass.class} to weaviate (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+      log.red(
+        `Could not submit ${thingOrAction} class ${
+          schemaClass.class
+        } to weaviate (Status ${err.response.status}): ${JSON.stringify(
+          err.response.body,
+        )}`,
+      );
       this.addMonitoring({
         verb: 'create',
         resource: `schema/${thingOrAction}`,
@@ -106,9 +120,9 @@ class Submitter {
     for (const schemaClass of classes) {
       const start = process.hrtime();
       // eslint-disable-next-line no-await-in-loop
-      await this.client
-        .apis
-        .schema[`weaviate_schema_${thingOrAction}s_create`]({ [`${thingOrAction}Class`]: schemaClass })
+      await this.client.apis.schema[`weaviate_schema_${thingOrAction}s_create`](
+        { [`${thingOrAction}Class`]: schemaClass },
+      )
         .then(handleSuccess(schemaClass, start))
         .catch(handleError(schemaClass, start));
     }
@@ -118,18 +132,24 @@ class Submitter {
       succeeded,
       failed,
     });
-  }
+  };
 
-  thingClasses = this.classes('thing')
+  thingClasses = this.classes('thing');
 
-  actionClasses = this.classes('action')
+  actionClasses = this.classes('action');
 
-  classReferences = (thingOrAction: string) => async (references: Array<any>) => {
+  classReferences = (thingOrAction: string) => async (
+    references: Array<any>,
+  ) => {
     let succeeded = 0;
     let failed = 0;
 
     const handleSuccess = (reference, start) => (res) => {
-      log.green(`Successfully added cross-ref on ${reference.className} to ${reference.body['@dataType'][0]} (Status ${res.status})`);
+      log.green(
+        `Successfully added cross-ref on ${reference.className} to ${
+          reference.body['@dataType'][0]
+        } (Status ${res.status})`,
+      );
       this.addMonitoring({
         verb: 'create',
         resource: `schema/${thingOrAction}/property`,
@@ -140,7 +160,13 @@ class Submitter {
     };
 
     const handleError = (reference, start) => (err) => {
-      log.red(`Could not create cross-ref on ${reference.className} to ${reference.body['@dataType'][0]} (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+      log.red(
+        `Could not create cross-ref on ${reference.className} to ${
+          reference.body['@dataType'][0]
+        } (Status ${err.response.status}): ${JSON.stringify(
+          err.response.body,
+        )}`,
+      );
       this.addMonitoring({
         verb: 'create',
         resource: `schema/${thingOrAction}/property`,
@@ -154,9 +180,9 @@ class Submitter {
     for (const reference of references) {
       const start = process.hrtime();
       // eslint-disable-next-line no-await-in-loop
-      await this.client
-        .apis
-        .schema[`weaviate_schema_${thingOrAction}s_properties_add`](reference)
+      await this.client.apis.schema[
+        `weaviate_schema_${thingOrAction}s_properties_add`
+      ](reference)
         .then(handleSuccess(reference, start))
         .catch(handleError(reference, start));
     }
@@ -166,18 +192,22 @@ class Submitter {
       succeeded,
       failed,
     });
-  }
+  };
 
-  thingClassReferences = this.classReferences('thing')
+  thingClassReferences = this.classReferences('thing');
 
-  actionClassReferences = this.classReferences('action')
+  actionClassReferences = this.classReferences('action');
 
   vertices = (thingOrAction: string) => async (vertices: Array<any>) => {
     let succeeded = 0;
     let failed = 0;
 
     const handleSuccess = (vertex, start) => (res) => {
-      log.green(`Successfully submitted ${thingOrAction} vertex of type ${vertex.class} to weaviate (Status ${res.status})`);
+      log.green(
+        `Successfully submitted ${thingOrAction} vertex of type ${
+          vertex.class
+        } to weaviate (Status ${res.status})`,
+      );
       // eslint-disable-next-line no-param-reassign
       vertex.uuid = res.body[`${thingOrAction}Id`];
       this.addMonitoring({
@@ -191,7 +221,13 @@ class Submitter {
 
     const handleError = (vertex, start) => (err) => {
       log.red(err);
-      log.red(`Could not submit ${thingOrAction} vertex of type ${vertex.class} to weaviate (Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+      log.red(
+        `Could not submit ${thingOrAction} vertex of type ${
+          vertex.class
+        } to weaviate (Status ${err.response.status}): ${JSON.stringify(
+          err.response.body,
+        )}`,
+      );
       this.addMonitoring({
         verb: 'create',
         resource: 'action',
@@ -206,10 +242,17 @@ class Submitter {
       const { class: className, ...schema } = vertex;
       const start = process.hrtime();
       // eslint-disable-next-line no-await-in-loop
-      await this.client
-        .apis[`${thingOrAction}s`][`weaviate_${thingOrAction}s_create`](
-          { body: { asnyc: false, [thingOrAction]: { '@class': className, '@context': 'some-context', schema } } },
-        )
+      await this.client.apis[`${thingOrAction}s`]
+        [`weaviate_${thingOrAction}s_create`]({
+          body: {
+            asnyc: false,
+            [thingOrAction]: {
+              '@class': className,
+              '@context': 'some-context',
+              schema,
+            },
+          },
+        })
         .then(handleSuccess(vertex, start))
         .catch(handleError(vertex, start));
     }
@@ -220,13 +263,15 @@ class Submitter {
       failed,
     });
     return vertices;
-  }
+  };
 
-  actionVertices = this.vertices('action')
+  actionVertices = this.vertices('action');
 
-  thingVertices = this.vertices('thing')
+  thingVertices = this.vertices('thing');
 
-  verticesReferences = (thingOrAction: string) => async (references: Array<any>) => {
+  verticesReferences = (thingOrAction: string) => async (
+    references: Array<any>,
+  ) => {
     let succeeded = 0;
     let failed = 0;
 
@@ -238,8 +283,12 @@ class Submitter {
         success: true,
         hrtime: process.hrtime(start),
       });
-      log.green(`Successfully added cross-ref from ${reference.uuid} to `
-        + `${reference.body.$cref} (Status ${res.status}), took ${formatElapsed(elapsed)}`);
+      log.green(
+        `Successfully added cross-ref from ${reference.uuid} to `
+          + `${reference.body.$cref} (Status ${res.status}), took ${formatElapsed(
+            elapsed,
+          )}`,
+      );
       succeeded += 1;
     };
 
@@ -250,8 +299,12 @@ class Submitter {
         success: false,
         hrtime: process.hrtime(start),
       });
-      log.red(`Could not create cross-ref on ${reference.className} `
-        + `(Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+      log.red(
+        `Could not create cross-ref on ${reference.className} `
+          + `(Status ${err.response.status}): ${JSON.stringify(
+            err.response.body,
+          )}`,
+      );
       failed += 1;
     };
 
@@ -259,8 +312,8 @@ class Submitter {
     for (const reference of references) {
       const start = process.hrtime();
       // eslint-disable-next-line no-await-in-loop
-      await this.client
-        .apis[`${thingOrAction}s`][`weaviate_${thingOrAction}s_patch`](
+      await this.client.apis[`${thingOrAction}s`]
+        [`weaviate_${thingOrAction}s_patch`](
           referenceToPatchDoc(reference, thingOrAction),
         )
         .then(handleSuccess(reference, start))
@@ -272,13 +325,15 @@ class Submitter {
       succeeded,
       failed,
     });
-  }
+  };
 
-  thingVerticesReferences = this.verticesReferences('thing')
+  thingVerticesReferences = this.verticesReferences('thing');
 
-  actionVerticesReferences = this.verticesReferences('action')
+  actionVerticesReferences = this.verticesReferences('action');
 
-  getAndCheckVertices = (thingOrAction: string) => async (vertices: Array<any>) => {
+  getAndCheckVertices = (thingOrAction: string) => async (
+    vertices: Array<any>,
+  ) => {
     let succeeded = 0;
     let failed = 0;
 
@@ -289,8 +344,11 @@ class Submitter {
         success: true,
         hrtime: process.hrtime(start),
       });
-      log.green(`Successfully retrieved ${thingOrAction} vertex with uuid ${vertex.uuid} `
-      + `(Status: ${res.status})`);
+      log.green(
+        `Successfully retrieved ${thingOrAction} vertex with uuid ${
+          vertex.uuid
+        } ` + `(Status: ${res.status})`,
+      );
       succeeded += 1;
 
       this.comparer.retrievedWithCached(res.body, vertex, thingOrAction);
@@ -303,8 +361,12 @@ class Submitter {
         success: false,
         hrtime: process.hrtime(start),
       });
-      log.red(`Could not retrieve ${thingOrAction} with uuid ${vertex.uuid} `
-        + `(Status ${err.response.status}): ${JSON.stringify(err.response.body)}`);
+      log.red(
+        `Could not retrieve ${thingOrAction} with uuid ${vertex.uuid} `
+          + `(Status ${err.response.status}): ${JSON.stringify(
+            err.response.body,
+          )}`,
+      );
       failed += 1;
     };
 
@@ -312,10 +374,10 @@ class Submitter {
     for (const vertex of vertices) {
       const start = process.hrtime();
       // eslint-disable-next-line no-await-in-loop
-      await this.client
-        .apis[`${thingOrAction}s`][`weaviate_${thingOrAction}s_get`](
-          { [`${thingOrAction}Id`]: vertex.uuid },
-        )
+      await this.client.apis[`${thingOrAction}s`]
+        [`weaviate_${thingOrAction}s_get`]({
+          [`${thingOrAction}Id`]: vertex.uuid,
+        })
         .then(handleSuccess(vertex, start))
         .catch(handleError(vertex));
     }
@@ -325,13 +387,11 @@ class Submitter {
       succeeded,
       failed,
     });
-  }
+  };
 
+  getAndCheckThingVertices = this.getAndCheckVertices('thing');
 
-  getAndCheckThingVertices = this.getAndCheckVertices('thing')
-
-  getAndCheckActionVertices = this.getAndCheckVertices('action')
+  getAndCheckActionVertices = this.getAndCheckVertices('action');
 }
-
 
 module.exports = Submitter;

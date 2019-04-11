@@ -9,6 +9,7 @@ module.exports = (options: GlobalOptions) => {
   const insertTokenRequestInterceptor = (req) => {
     req.headers['X-API-KEY'] = options.authorization.apiKey;
     req.headers['X-API-TOKEN'] = options.authorization.apiToken;
+    req.headers['Content-Type'] = 'application/json';
     req.url = req.url.replace(/^https/, 'http');
 
     return req;
