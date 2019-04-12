@@ -40,3 +40,35 @@ variable "gke_machine_type" {
 variable "gcp_region" {
 	default = "europe-west1"
 }
+
+variable "aks_resource_group_name" {
+	default = "weaviateRG1"
+}
+
+variable "aks_location" {
+	default = "East US"
+}
+
+variable "aks_cluster_name" {
+	default = "weaviateAks"
+}
+
+variable "aks_cluster_size" {
+	default = "1"
+}
+
+variable "aks_dns_prefix" {
+	default = "weaviateagent"
+}
+
+variable "aks_client_id" {
+	
+}
+
+variable "aks_client_secret" {
+	
+}
+
+variable "ssh_public_key" {
+	
+}
