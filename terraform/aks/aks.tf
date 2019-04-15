@@ -1,6 +1,29 @@
 
 provider "azurerm" {
-	version = "=1.5.0"	
+	version = "~>1.5"
+}
+
+provider "random" {
+  version = "~> 2.0"
+}
+
+resource "azuread_application" "current" {
+  name = "default"
+}
+
+resource "azuread_service_principal" "current" {
+  application_id = "${azuread_application.current.application_id}"
+}
+
+resource "random_string" "password" {
+  length  = 64
+  special = true
+}
+
+resource "azuread_service_principal_password" "current" {
+  service_principal_id = "${azuread_service_principal.current.id}"
+  value                = "${random_string.password.result}"
+  end_date_relative    = "2160h"                                   # valid for 90 days
 }
 
 resource "azurerm_resource_group" "weaviate-k8s" {
@@ -9,7 +32,7 @@ resource "azurerm_resource_group" "weaviate-k8s" {
 }
 
 resource "azurerm_kubernetes_cluster" "weaviate-k8s" {
-  name                = "${var.aks_cluster_name}"
+  name                = "${var.cluster_name}"
   location            = "${azurerm_resource_group.weaviate-k8s.location}"
   resource_group_name = "${azurerm_resource_group.weaviate-k8s.name}"
   dns_prefix          = "${var.aks_dns_prefix}"
@@ -25,14 +48,14 @@ resource "azurerm_kubernetes_cluster" "weaviate-k8s" {
   agent_pool_profile {
     name            = "default"
     count           = "${var.aks_cluster_size}"
-    vm_size         = "Standard_D1_v2"
-    os_type         = "Linux"
-    os_disk_size_gb = 30
+    vm_size         = "${var.aks_vm_size}"
+    os_type         = "${var.aks_os_type}"
+    os_disk_size_gb = "${var.aks_disk_size}"
   }
 
   service_principal {
-    client_id     = "${var.aks_client_id}"
-    client_secret = "${var.aks_client_secret}"
+    client_id     = "${azuread_application.current.application_id}"
+    client_secret = "${azuread_service_principal_password.current.value}"
   }
 
   tags = {
