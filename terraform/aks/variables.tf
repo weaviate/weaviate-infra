@@ -21,7 +21,7 @@ variable "aks_cluster_size" {
 }
 
 variable "aks_vm_size" {
-	default = "Standard_D1_v2"
+	default = "Standard_D4_v2"
 }
 
 variable "aks_os_type" {

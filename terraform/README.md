@@ -2,8 +2,9 @@
 
 Currently GKE (Google) and AKS (Azure) supported
 
-./aks
-./gke
+[AKS](./aks/README.md)
+
+[GKE](./gke/README.md)
 
 ## Pre-reqs
 
@@ -11,5 +12,5 @@ Currently GKE (Google) and AKS (Azure) supported
 
 ## Next up
 
-Deploy weaviate onto new cluster ../README.md
+[Deploy weaviate onto new cluster](../README.md)
 

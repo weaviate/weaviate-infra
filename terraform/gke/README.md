@@ -40,5 +40,4 @@ $ gcloud container clusters get-credentials weaviate
 
 ## Next up
 
-Deploy weaviate onto new cluster ../README.md
-
+[Deploy weaviate onto new cluster](../../README.md)
