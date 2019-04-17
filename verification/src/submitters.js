@@ -14,7 +14,7 @@ type Status = {
 
 function referenceToPatchDoc(reference, thingOrAction) {
   return {
-    [`${thingOrAction}Id`]: reference.uuid,
+    id: reference.uuid,
     body: [
       {
         op: 'add',
@@ -147,7 +147,7 @@ class Submitter {
     const handleSuccess = (reference, start) => (res) => {
       log.green(
         `Successfully added cross-ref on ${reference.className} to ${
-          reference.body['@dataType'][0]
+          reference.body.dataType[0]
         } (Status ${res.status})`,
       );
       this.addMonitoring({
@@ -162,7 +162,7 @@ class Submitter {
     const handleError = (reference, start) => (err) => {
       log.red(
         `Could not create cross-ref on ${reference.className} to ${
-          reference.body['@dataType'][0]
+          reference.body.dataType[0]
         } (Status ${err.response.status}): ${JSON.stringify(
           err.response.body,
         )}`,
@@ -209,7 +209,7 @@ class Submitter {
         } to weaviate (Status ${res.status})`,
       );
       // eslint-disable-next-line no-param-reassign
-      vertex.uuid = res.body[`${thingOrAction}Id`];
+      vertex.uuid = res.body.id;
       this.addMonitoring({
         verb: 'create',
         resource: thingOrAction,
@@ -245,13 +245,9 @@ class Submitter {
       await this.client.apis[`${thingOrAction}s`]
         [`weaviate_${thingOrAction}s_create`]({
           body: {
-            asnyc: false,
-            [thingOrAction]: {
-              '@class': className,
-              '@context': 'some-context',
-              schema,
-            },
-          },
+            class: className,
+            schema,
+          }
         })
         .then(handleSuccess(vertex, start))
         .catch(handleError(vertex, start));
@@ -376,7 +372,7 @@ class Submitter {
       // eslint-disable-next-line no-await-in-loop
       await this.client.apis[`${thingOrAction}s`]
         [`weaviate_${thingOrAction}s_get`]({
-          [`${thingOrAction}Id`]: vertex.uuid,
+          id: vertex.uuid,
         })
         .then(handleSuccess(vertex, start))
         .catch(handleError(vertex));

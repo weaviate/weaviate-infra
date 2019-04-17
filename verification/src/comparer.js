@@ -6,13 +6,13 @@ const deepEqual = require('deep-equal');
 const log = require('./log');
 
 type Vertex = {
-  ['@class']: string,
+  class: string,
   schema: Object,
 }
 
 function compareClass(retrieved: Vertex, cached: any) {
-  if (retrieved['@class'] !== cached.class) {
-    throw new Error(`classes don't match: ${retrieved['@class']} vs ${cached.class}`);
+  if (retrieved.class !== cached.class) {
+    throw new Error(`classes don't match: ${retrieved.class} vs ${cached.class}`);
   }
 }
 

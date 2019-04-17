@@ -1,10 +1,11 @@
 // @flow
 
 import type { ThingOrActionClass, Property } from './ontology';
-
+const log = require('./log');
+  
 const crossReferenceProperty = (target: ThingOrActionClass): Property => ({
   name: `in${target.class}`,
-  '@dataType': [target.class],
+  dataType: [target.class],
   description: `A reference to the class '${target.class}'.`,
 });
 
@@ -48,7 +49,8 @@ const randomCrossReference = (
   const source = randomArrayItem(classes);
   const refsAlreadyAddedToThisSource = refsAlreadyAdded
     .filter(r => r.className === source.class)
-    .map(r => r.body['@dataType'][0]);
+    .map(r => r.body.dataType[0]);
+  log.bold(classes)
   const allOtherClasses = classes
     .filter(sourceNotContained(source))
     .filter(existingRefsNotContained(refsAlreadyAddedToThisSource));

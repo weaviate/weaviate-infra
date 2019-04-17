@@ -60,7 +60,7 @@ class Verifier {
   }
 
   async createClasses(classNames, submitter, thingOrAction) {
-    log.noBreak('Creating Thing Classes...');
+    log.noBreak(`Creating ${thingOrAction} Classes...`);
     const schemaClasses = classNames.map(name => classFromName(name, this.words));
     await submitter(schemaClasses);
     log.green(

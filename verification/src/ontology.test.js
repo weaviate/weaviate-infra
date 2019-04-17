@@ -19,7 +19,7 @@ describe('creating a random Thing based on a specific ontology', () => {
   describe('with a single string property', () => {
     const ThingClass = makeThingClass([{
       name: 'title',
-      '@dataType': ['string'],
+      dataType: ['string'],
       description: '',
     }]);
 
@@ -33,7 +33,7 @@ describe('creating a random Thing based on a specific ontology', () => {
   describe('with a single number property', () => {
     const ThingClass = makeThingClass([{
       name: 'amount',
-      '@dataType': ['number'],
+      dataType: ['number'],
       description: '',
     }]);
 
@@ -47,7 +47,7 @@ describe('creating a random Thing based on a specific ontology', () => {
   describe('with a single bool property', () => {
     const ThingClass = makeThingClass([{
       name: 'awesome',
-      '@dataType': ['boolean'],
+      dataType: ['boolean'],
       description: '',
     }]);
 
@@ -61,15 +61,15 @@ describe('creating a random Thing based on a specific ontology', () => {
   describe('with multiple properties', () => {
     const ThingClass = makeThingClass([{
       name: 'awesome',
-      '@dataType': ['boolean'],
+      dataType: ['boolean'],
       description: '',
     }, {
       name: 'amount',
-      '@dataType': ['number'],
+      dataType: ['number'],
       description: '',
     }, {
       name: 'title',
-      '@dataType': ['string'],
+      dataType: ['string'],
       description: '',
     }]);
 

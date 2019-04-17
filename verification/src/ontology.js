@@ -4,7 +4,7 @@ const random = require('./randomData');
 
 export type Property = {
   name: string,
-  '@dataType': Array<string>,
+  dataType: Array<string>,
   description: string,
 
 }
@@ -32,7 +32,7 @@ function capitalizeWord(word: string) {
 function randomProperty(words: Array<string>): Property {
   return {
     name: randomSingleItemFromWords(words).toLowerCase(),
-    '@dataType': [randomSingleItemFromWords(primitiveDataTypes)],
+    dataType: [randomSingleItemFromWords(primitiveDataTypes)],
     description: 'No property description, either ;-)',
   };
 }
@@ -73,7 +73,7 @@ function valueForType(type: string): string | number | boolean {
 function vertexFromClass(schemaClass: ThingOrActionClass) {
   const props = schemaClass.properties.reduce((acc, cur) => ({
     ...acc,
-    [cur.name]: valueForType(cur['@dataType'][0]),
+    [cur.name]: valueForType(cur.dataType[0]),
   }), {});
 
   return {

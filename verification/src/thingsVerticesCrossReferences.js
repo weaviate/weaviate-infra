@@ -1,6 +1,6 @@
 const { primitiveDataTypes } = require('./ontology');
 
-const firstDataTypeIsNotAPrimitiveType = prop => primitiveDataTypes.indexOf(prop['@dataType'][0]) === -1;
+const firstDataTypeIsNotAPrimitiveType = prop => primitiveDataTypes.indexOf(prop.dataType[0]) === -1;
 
 const getReferenceProps = classToPopulate => classToPopulate
   .properties.filter(firstDataTypeIsNotAPrimitiveType);
@@ -27,7 +27,7 @@ const populateCrossReferencesOnVertices = (vertices, classToPopulate, thingOrAct
       return acc;
     }
 
-    const target = getRandomThingOfClass(cur['@dataType'][0], vertices);
+    const target = getRandomThingOfClass(cur.dataType[0], vertices);
     if (!target) {
       // there is no guarantuee that a vertex exists for every
       // thingClass since we randomly chose the classes. If we have a
