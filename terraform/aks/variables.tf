@@ -17,7 +17,7 @@ variable "aks_location" {
 }
 
 variable "aks_cluster_size" {
-	default = "3"
+	default = "5"
 }
 
 variable "aks_vm_size" {

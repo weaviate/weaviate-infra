@@ -5,13 +5,37 @@
 - Azure cloud account - https://azure.microsoft.com/
 - Azure CLI - https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest
 
-### Creating the Cluster
+### Authentication with Azure
+
+Use the Azure CLI to authenticate with Azure.
 
 ```
-terraform init
-terraform plan
-terraform apply
+az login
 ```
+
+You will need to create (or use an existing) subscription. The subscription ID can be obtained from the UI or by using `az account list`
+
+Next, you will specifiy the subscription to use:
+
+```
+az account set --subscription="SUBSCRIPTION_ID"
+```
+
+### Creating the Cluster
+
+You can modify any variables (e.g. cluster location, cluster size) in the [variables.tf](./variables.tf) file.
+
+```
+terraform init # Only needs to be run once
+```
+
+```
+terraform plan
+```
+
+```
+terraform apply  # approve with 'yes'
+``` 
 
 If the terraform apply fails (with permissions issue, re-apply)
 
@@ -25,12 +49,8 @@ echo "$(terraform output kube_config)" > azurek8s
 kubectl --kubeconfig=azurek8s cluster-info
 ```
 
-You can either replace your existing kubeconfig with the new generated one or merge your kubeconfigs:
+You can either replace your existing kubeconfig with the new generated one or merge your kubeconfigs.
 
-```
-export KUBECONFIG=~/.kube/config:[PATH_TO_azurek8s]
-kubectl config view --flatten > ~/.kube/mergedkub && mv ~/.kube/mergedkub ~/.kube/config
-```
 ## Next up
 
 [Deploy weaviate onto new cluster](../../README.md)
