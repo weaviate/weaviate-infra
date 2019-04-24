@@ -1,7 +1,8 @@
-# weaviate-infra
+# weaviate-infra <img alt='Weaviate logo' src='https://raw.githubusercontent.com/creativesoftwarefdn/weaviate/19de0956c69b66c5552447e84d016f4fe29d12c9/docs/assets/weaviate-logo.png' width='180' align='right' />
 
+> Cloud scripts to deploy weaviate to Kuberentes clusters, including Terraform setup scripts for GKE and AKS, as well as a vendor-agnostic Helm chart.
 
-## Deploy Weavite via Helm
+## Deploy Weaviate via Helm
 
 This section describes the process of deploying the Weaviate platform on Kubernetes using Helm
 
