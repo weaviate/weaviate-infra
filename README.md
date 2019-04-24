@@ -2,6 +2,8 @@
 
 > Cloud scripts to deploy weaviate to Kuberentes clusters, including Terraform setup scripts for GKE and AKS, as well as a vendor-agnostic Helm chart.
 
+See [creativesoftwarefdn/weaviate](https://github.com/creativesoftwarefdn/weaviate) for more information about Weaviate - The decentralized knowledge graph.
+
 ## Deploy Weaviate via Helm
 
 This section describes the process of deploying the Weaviate platform on Kubernetes using Helm
