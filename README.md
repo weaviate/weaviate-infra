@@ -8,10 +8,10 @@ See [creativesoftwarefdn/weaviate](https://github.com/creativesoftwarefdn/weavia
 
 This section describes the process of deploying the Weaviate platform on Kubernetes using Helm
 
-### Pre-reqs
+### Prerequisites
 
 * A kubernetes cluster
-* kubctl 
+* kubectl 
 * Helm (locally)
 
 ### Setup Helm
