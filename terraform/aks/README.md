@@ -5,6 +5,8 @@
 - Azure cloud account - https://azure.microsoft.com/
 - Azure CLI - https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest
 
+The default cluster setup uses 5 Standard_D4_v2 instances. This is not valid under an Azure free tier account (you will receive an error regarding QuotaExceeded when attempting to apply the terraform). So you will need to either use a pay-as-you-go Azure account or adjust the cluster size and instances in the variables.tf file.
+
 ### Authentication with Azure
 
 Use the Azure CLI to authenticate with Azure.
