@@ -9,3 +9,6 @@
 *.tfstate.*
 
 *.lock
+
+#GKE Credentials file
+semi-weaviate-infra.json
