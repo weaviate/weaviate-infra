@@ -33,15 +33,13 @@ function parseContextionary(textBlob: string): Array<string> {
 }
 
 function getLatestContextionaryVersion() {
-  return fetch(
-    'https://contextionary.creativesoftwarefdn.org/contextionary.json',
-  )
+  return fetch('https://c11y.semi.technology/contextionary.json')
     .then(res => res.json())
     .then(body => body.latestVersion);
 }
 
 function contextionaryURL(version: string): string {
-  return `https://contextionary.creativesoftwarefdn.org/${version}/en/contextionary.vocab`;
+  return `https://c11y.semi.technology/${version}/en/contextionary.vocab`;
 }
 
 function handleContextionaryDownloadError(e: Error) {
@@ -64,7 +62,9 @@ async function initContextionary(
 ): Promise<Array<string>> {
   if (options.serviceDiscovery.contextionaryVersion === 'minimal') {
     // don't download at all, but rather use the minimal one we have onboard
-    return parseContextionary(fs.readFileSync('./minimal-contextionary.txt', 'utf-8'));
+    return parseContextionary(
+      fs.readFileSync('./minimal-contextionary.txt', 'utf-8'),
+    );
   }
 
   let version;

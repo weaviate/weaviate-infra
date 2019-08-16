@@ -38,11 +38,17 @@ class Submitter {
 
   monitoring: Array<Monitoring>;
 
+  queue: Object;
+
   constructor(client: any) {
     this.client = client;
     this.status = [];
     this.monitoring = [];
     this.comparer = new Comparer(this.addMonitoring);
+    this.queue = {
+      thing: [],
+      action: [],
+    };
   }
 
   addStatus(status: Status) {
@@ -120,9 +126,9 @@ class Submitter {
     for (const schemaClass of classes) {
       const start = process.hrtime();
       // eslint-disable-next-line no-await-in-loop
-      await this.client.apis.schema[`weaviate_schema_${thingOrAction}s_create`](
-        { [`${thingOrAction}Class`]: schemaClass },
-      )
+      await this.client.apis.schema[`schema_${thingOrAction}s_create`]({
+        [`${thingOrAction}Class`]: schemaClass,
+      })
         .then(handleSuccess(schemaClass, start))
         .catch(handleError(schemaClass, start));
     }
@@ -180,9 +186,9 @@ class Submitter {
     for (const reference of references) {
       const start = process.hrtime();
       // eslint-disable-next-line no-await-in-loop
-      await this.client.apis.schema[
-        `weaviate_schema_${thingOrAction}s_properties_add`
-      ](reference)
+      await this.client.apis.schema[`schema_${thingOrAction}s_properties_add`](
+        reference,
+      )
         .then(handleSuccess(reference, start))
         .catch(handleError(reference, start));
     }
@@ -240,17 +246,22 @@ class Submitter {
     // eslint-disable-next-line no-restricted-syntax
     for (const vertex of vertices) {
       const { class: className, ...schema } = vertex;
-      const start = process.hrtime();
-      // eslint-disable-next-line no-await-in-loop
-      await this.client.apis[`${thingOrAction}s`]
-        [`weaviate_${thingOrAction}s_create`]({
+      if (this.queue[thingOrAction].length >= 50) {
+        // actually submit now
+        const start = process.hrtime();
+        // eslint-disable-next-line no-await-in-loop
+        await this.client.apis.batching[`batching_${thingOrAction}s_create`]({
           body: {
-            class: className,
-            schema,
-          }
+            [`${thingOrAction}s`]: this.queue[thingOrAction],
+          },
         })
-        .then(handleSuccess(vertex, start))
-        .catch(handleError(vertex, start));
+          .then(handleSuccess(vertex, start))
+          .catch(handleError(vertex, start));
+        this.queue[thingOrAction] = [];
+      } else {
+        // only append for later submission
+        this.queue[thingOrAction].push({ class: className, schema });
+      }
     }
 
     this.addStatus({
@@ -309,7 +320,7 @@ class Submitter {
       const start = process.hrtime();
       // eslint-disable-next-line no-await-in-loop
       await this.client.apis[`${thingOrAction}s`]
-        [`weaviate_${thingOrAction}s_patch`](
+        [`${thingOrAction}s_patch`](
           referenceToPatchDoc(reference, thingOrAction),
         )
         .then(handleSuccess(reference, start))
@@ -371,7 +382,7 @@ class Submitter {
       const start = process.hrtime();
       // eslint-disable-next-line no-await-in-loop
       await this.client.apis[`${thingOrAction}s`]
-        [`weaviate_${thingOrAction}s_get`]({
+        [`${thingOrAction}s_get`]({
           id: vertex.uuid,
         })
         .then(handleSuccess(vertex, start))

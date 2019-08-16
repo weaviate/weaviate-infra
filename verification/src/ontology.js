@@ -6,21 +6,20 @@ export type Property = {
   name: string,
   dataType: Array<string>,
   description: string,
-
-}
+};
 
 export type ThingOrActionClass = {
   class: string,
   description: string,
-  properties: Array<Property>
-}
+  properties: Array<Property>,
+};
 
-const minimumNumberOfProperties = 1;
-const maximumNumberOfProperties = 8;
+const minimumNumberOfProperties = 5;
+const maximumNumberOfProperties = 15;
 const primitiveDataTypes = ['number', 'string', 'boolean', 'int', 'date'];
 
 function randomSingleItemFromWords(words: Array<string>) {
-  return words[Math.floor(Math.random() * (words.length))];
+  return words[Math.floor(Math.random() * words.length)];
 }
 
 function capitalizeWord(word: string) {
@@ -37,7 +36,11 @@ function randomProperty(words: Array<string>): Property {
   };
 }
 
-function randomProperties(min: number, max: number, words: Array<string>): Array<Property> {
+function randomProperties(
+  min: number,
+  max: number,
+  words: Array<string>,
+): Array<Property> {
   const amount = Math.floor(Math.random() * (max - min) + min);
   const properties: Array<Property> = [];
 
@@ -51,30 +54,51 @@ function randomProperties(min: number, max: number, words: Array<string>): Array
 
 // clasFromName can be used for both thing classes, as well as
 // action classes
-function classFromName(className: string, words: Array<string>): ThingOrActionClass {
+function classFromName(
+  className: string,
+  words: Array<string>,
+): ThingOrActionClass {
   return {
     class: capitalizeWord(className),
     description: 'No description on this auto-generated thing',
-    properties: randomProperties(minimumNumberOfProperties, maximumNumberOfProperties, words),
+    properties: randomProperties(
+      minimumNumberOfProperties,
+      maximumNumberOfProperties,
+      words,
+    ),
   };
 }
 
 function valueForType(type: string): string | number | boolean {
   switch (type) {
-    case 'int': { return random.int(); }
-    case 'number': { return random.number(); }
-    case 'string': { return random.word(); }
-    case 'boolean': { return random.bool(); }
-    case 'date': { return random.date(); }
-    default: throw new Error(`unrecognized type: ${type}`);
+    case 'int': {
+      return random.int();
+    }
+    case 'number': {
+      return random.number();
+    }
+    case 'string': {
+      return random.word();
+    }
+    case 'boolean': {
+      return random.bool();
+    }
+    case 'date': {
+      return random.date();
+    }
+    default:
+      throw new Error(`unrecognized type: ${type}`);
   }
 }
 
 function vertexFromClass(schemaClass: ThingOrActionClass) {
-  const props = schemaClass.properties.reduce((acc, cur) => ({
-    ...acc,
-    [cur.name]: valueForType(cur.dataType[0]),
-  }), {});
+  const props = schemaClass.properties.reduce(
+    (acc, cur) => ({
+      ...acc,
+      [cur.name]: valueForType(cur.dataType[0]),
+    }),
+    {},
+  );
 
   return {
     class: schemaClass.class,
